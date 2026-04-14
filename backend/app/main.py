@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import farmer, sensor, recommendation
 from app.services.predict import predict_crop
@@ -6,6 +7,15 @@ from app.services.irrigation import irrigation_decision, soil_condition_logic
 from app.services.weather import get_weather
 
 app = FastAPI(title="Smart Agri System API")
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(farmer.router, prefix="/farmer", tags=["Farmer"])
 app.include_router(sensor.router, prefix="/sensor", tags=["Sensor"])
