@@ -48,7 +48,8 @@ def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
         
         prompt = f"""
 You are an expert AI Agricultural Assistant. 
-Base your answers strictly on the provided knowledge base, the user's input, and the AI/ML model's prediction.
+First, try to base your answers on the provided Knowledge Base, the user's input, and the AI/ML model's prediction. 
+If the Knowledge Base does NOT contain information about the specific location, soil type, or crop, you must fall back on your own general agricultural knowledge to provide a factually correct and scientifically sound recommendation.
 
 --- Knowledge Base ---
 {KNOWLEDGE_BASE}
@@ -63,7 +64,7 @@ Predicted Crop: {ml_output.get('predicted_crop', 'Unknown')}
 Recommended Irrigation: {ml_output.get('irrigation', 'Unknown')}
 Soil Condition: {ml_output.get('soil_condition', 'Unknown')}
 
-Based on the above, provide a comprehensive but concise response to the farmer. Explain why the predicted crop is suitable for their location and soil type using the Knowledge Base. If the soil mentioned matches the knowledge base, incorporate those specific insights (e.g., fertilizers, regions, characteristics).
+Based on the above, provide a comprehensive but concise response to the farmer. Explain why the predicted crop is suitable for their location and soil type. If the soil mentioned matches the knowledge base, incorporate those specific insights (e.g., fertilizers, regions, characteristics). If it does not match, use your general knowledge to offer helpful, accurate advice.
 """
         response = model.generate_content(prompt)
         return response.text
