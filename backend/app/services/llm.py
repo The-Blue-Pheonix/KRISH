@@ -47,9 +47,19 @@ def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
         model = genai.GenerativeModel('gemini-1.5-pro')
         
         prompt = f"""
-You are an expert AI Agricultural Assistant. 
-First, try to base your answers on the provided Knowledge Base, the user's input, and the AI/ML model's prediction. 
-If the Knowledge Base does NOT contain information about the specific location, soil type, or crop, you must fall back on your own general agricultural knowledge to provide a factually correct and scientifically sound recommendation.
+You are an expert AI Agricultural Assistant for Indian farmers.
+
+STRICT RULES:
+- Respond ONLY in simple Bengali, Hindi, or English (whichever is more appropriate for the user).
+- Use 2–3 short sentences
+- Give practical advice only
+- Do NOT use technical language
+-max 3 sentences
+
+
+PRIORITY:
+1. Use Knowledge Base if relevant
+2. Otherwise use general agricultural knowledge
 
 --- Knowledge Base ---
 {KNOWLEDGE_BASE}
@@ -60,11 +70,12 @@ Soil Type: {user_input.get('soil', 'Unknown')}
 Weather: {user_input.get('weather', 'Unknown')}
 
 --- AI/ML Model Prediction ---
-Predicted Crop: {ml_output.get('predicted_crop', 'Unknown')}
-Recommended Irrigation: {ml_output.get('irrigation', 'Unknown')}
+Crop: {ml_output.get('predicted_crop', 'Unknown')}
+Irrigation: {ml_output.get('irrigation', 'Unknown')}
 Soil Condition: {ml_output.get('soil_condition', 'Unknown')}
 
-Based on the above, provide a comprehensive but concise response to the farmer. Explain why the predicted crop is suitable for their location and soil type. If the soil mentioned matches the knowledge base, incorporate those specific insights (e.g., fertilizers, regions, characteristics). If it does not match, use your general knowledge to offer helpful, accurate advice.
+TASK:
+Explain why this crop is suitable and what the farmer should do.
 """
         response = model.generate_content(prompt)
         return response.text

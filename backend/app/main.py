@@ -29,42 +29,71 @@ def health_check():
 
 @app.get("/predict")
 def predict(city: str, soil: str):
-
-    # 1. Weather
-    weather = get_weather(city)
-    temp = weather["temperature"]
-    humidity = weather["humidity"]
-    rainfall = weather["rainfall"]
-
-    # 2. ML
-    crop = predict_crop(temp, humidity, rainfall, soil)
-
-    # 3. Soil Condition
-    soil_condition = soil_condition_logic("Auto", rainfall)
-
-    # 4. Irrigation
-    irrigation = irrigation_decision(temp, rainfall, soil_condition)
-
-    # 5. LLM Synthesis based on Knowledge Base and ML Output
-    user_inputs = {
-        "city": city,
-        "soil": soil,
-        "weather": weather
-    }
+    """
+    Complete agricultural prediction pipeline:
+    1. Fetch real-time weather data
+    2. Predict suitable crops using ML model
+    3. Analyze soil condition based on rainfall
+    4. Determine irrigation requirements
+    5. Generate AI recommendations using LLM
     
-    ml_outputs = {
-        "predicted_crop": crop,
-        "soil_condition": soil_condition,
-        "irrigation": irrigation
-    }
+    Parameters:
+    - city: str - City name (e.g., "Kolkata")
+    - soil: str - Soil type (must be: "Alluvial", "Laterite", "Black", or "Red")
     
-    llm_recommendation = generate_agricultural_insight(user_inputs, ml_outputs)
+    Returns: JSON with weather, crop prediction, soil condition, irrigation advice, and AI recommendation
+    """
+    try:
+        # ✅ 1. FETCH WEATHER DATA
+        weather = get_weather(city)
+        temp = weather["temperature"]          # Float: Temperature in Celsius
+        humidity = weather["humidity"]         # Int: Humidity percentage (0-100)
+        rainfall = weather["rainfall"]         # Float: Rainfall in mm
 
-    return {
-        "location": city,
-        "weather": weather,
-        "predicted_crop": crop,
-        "soil_condition": soil_condition,
-        "irrigation": irrigation,
-        "ai_recommendation": llm_recommendation
-    }
+        # ✅ 2. PREDICT CROP using ML model
+        # Parameters: temp (float), humidity (int), rainfall (float), soil (str)
+        crop = predict_crop(temp, humidity, rainfall, soil)
+
+        # ✅ 3. ANALYZE SOIL CONDITION
+        # Returns: "Dry" (if rainfall < 20mm) or "Wet" (if rainfall >= 20mm)
+        soil_condition = soil_condition_logic("Auto", rainfall)
+
+        # ✅ 4. DETERMINE IRRIGATION NEEDS
+        # Logic: Returns "Yes" (Dry + Hot), "No" (Heavy rainfall), "Monitor" (other cases)
+        irrigation = irrigation_decision(temp, rainfall, soil_condition)
+
+        # ✅ 5. GENERATE AI RECOMMENDATION using LLM
+        user_inputs = {
+            "city": city,                    # String: User's location
+            "soil": soil,                    # String: Soil type
+            "weather": weather               # Dict: {temperature, humidity, rainfall}
+        }
+        
+        ml_outputs = {
+            "predicted_crop": crop,          # String: Recommended crop
+            "soil_condition": soil_condition,# String: "Dry" or "Wet"
+            "irrigation": irrigation         # String: "Yes", "No", or "Monitor"
+        }
+        
+        try:
+            llm_recommendation = generate_agricultural_insight(user_inputs, ml_outputs)
+        except Exception as e:
+            # Graceful fallback if LLM fails (no API key, network error, etc.)
+            llm_recommendation = f"AI advice unavailable. Please monitor your crops manually. (Error: {str(e)})"
+
+        # ✅ RETURN COMPLETE PREDICTION RESULT
+        return {
+            "location": city,
+            "weather": weather,
+            "predicted_crop": crop,
+            "soil_condition": soil_condition,
+            "irrigation": irrigation,
+            "ai_recommendation": llm_recommendation
+        }
+    
+    except ValueError as e:
+        # Validation error (e.g., invalid soil type)
+        return {"error": str(e), "status": "validation_failed"}
+    except Exception as e:
+        # Unexpected error
+        return {"error": str(e), "status": "prediction_failed"}
