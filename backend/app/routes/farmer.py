@@ -11,6 +11,4 @@ class FarmerInput(BaseModel):
     contact: str | None = None
 
 
-@router.post("/input")
-def submit_farmer_input(payload: FarmerInput):
-    return {"message": "Farmer input received", "data": payload.model_dump()}
+

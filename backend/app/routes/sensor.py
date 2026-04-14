@@ -11,6 +11,3 @@ class SensorData(BaseModel):
     location: str
 
 
-@router.post("/data")
-def receive_sensor_data(payload: SensorData):
-    return {"message": "Sensor data received", "data": payload.model_dump()}
