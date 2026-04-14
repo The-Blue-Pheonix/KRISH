@@ -1,4 +1,4 @@
-# Smart Agri System
+# KRISH
 
 Project scaffold for a smart agriculture platform with:
 - FastAPI backend
