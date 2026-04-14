@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.routes import farmer, sensor, recommendation
 from app.services.predict import predict_crop
-from app.services.irrigation import irrigation_decision
+from app.services.irrigation import irrigation_decision, soil_condition_logic
 from app.services.weather import get_weather
 
 app = FastAPI(title="Smart Agri System API")
@@ -28,12 +28,16 @@ def predict(city: str, soil: str):
     # 2. ML
     crop = predict_crop(temp, humidity, rainfall, soil)
 
-    # 3. Irrigation
-    irrigation = irrigation_decision(temp, rainfall)
+    # 3. Soil Condition
+    soil_condition = soil_condition_logic("Auto", rainfall)
+
+    # 4. Irrigation
+    irrigation = irrigation_decision(temp, rainfall, soil_condition)
 
     return {
         "location": city,
         "weather": weather,
         "predicted_crop": crop,
+        "soil_condition": soil_condition,
         "irrigation": irrigation
     }
