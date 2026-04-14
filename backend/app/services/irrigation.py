@@ -10,7 +10,7 @@ def soil_condition_logic(user_input, rainfall):
         return "Wet"
 
 
-# ✅ Irrigation decision (uses temp + soil)
+# ✅ Irrigation decision (uses temp + soil)// সেচ (jol dewa)
 def irrigation_decision(temp, rainfall, soil_condition):
 
     if soil_condition == "Dry" and temp > 30:
