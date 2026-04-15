@@ -1,8 +1,26 @@
 import google.generativeai as genai
 import os
+from dotenv import load_dotenv
+from functools import lru_cache
+
+load_dotenv()
 
 # Configure the API key from environment variable
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE"))
+
+# Cached helper function to reduce API calls
+@lru_cache(maxsize=100)
+def cached_llm_call(prompt: str) -> str:
+    """Cached wrapper for Gemini LLM calls"""
+    try:
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        error_msg = str(e)
+        if "429" in error_msg or "quota" in error_msg.lower():
+            return "API quota exceeded. Please enable billing or try again later."
+        return f"Error generating Gemini response: {e}"
 
 # Define the knowledge base (RAG chunks) provided by the user
 KNOWLEDGE_BASE = """
@@ -40,12 +58,9 @@ A: The Sundarbans region has coastal sandy soil and marshy/saline soil. Coastal 
 def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
     """
     Takes user input and the ML model's output, and feeds it to the Gemini LLM
-    augmented by the specific soil knowledge base.
+    augmented by the specific soil knowledge base. Uses caching to reduce API calls.
     """
     try:
-        # We use a standard generative model (e.g., gemini-1.5-pro)
-        model = genai.GenerativeModel('gemini-1.5-pro')
-        
         prompt = f"""
 You are an expert AI Agricultural Assistant for Indian farmers.
 
@@ -77,7 +92,10 @@ Soil Condition: {ml_output.get('soil_condition', 'Unknown')}
 TASK:
 Explain why this crop is suitable and what the farmer should do.
 """
-        response = model.generate_content(prompt)
-        return response.text
+        # Use cached LLM call to reduce API requests
+        return cached_llm_call(prompt)
     except Exception as e:
+        error_msg = str(e)
+        if "429" in error_msg or "quota" in error_msg.lower():
+            return "API quota exceeded. Please enable billing or try again later."
         return f"Error generating Gemini response: {e}"
