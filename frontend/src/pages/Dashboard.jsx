@@ -68,9 +68,9 @@ export default function Dashboard() {
     try {
       // Pass GPS coordinates if available, otherwise use city name
       const result = await fetchPrediction(
-        city, 
-        soil, 
-        location?.latitude || null, 
+        city,
+        soil,
+        location?.latitude || null,
         location?.longitude || null,
         i18n.language
       );

@@ -1,39 +1,41 @@
-// src/services/api.js
-export const fetchPrediction = async (city, soil, latitude = null, longitude = null, language = "en") => {
+export const fetchPrediction = async (city = null, soil, latitude = null, longitude = null, language = "en") => {
   try {
-    // Build query parameters
     let url = `http://localhost:8000/predict?`;
-    
     const params = new URLSearchParams();
-    
-    // Add location parameters (GPS takes precedence)
-    if (latitude !== null && longitude !== null) {
+
+    // Add location parameters (GPS takes precedence over city)
+    if (latitude !== null && latitude !== undefined && longitude !== null && longitude !== undefined) {
       params.append('latitude', latitude);
       params.append('longitude', longitude);
-      console.log(` Sending GPS coordinates to backend: lat=${latitude}, lon=${longitude}`);
+      console.log(`📍 GPS: ${latitude}, ${longitude}`);
     } else if (city) {
       params.append('city', city);
-      console.log(`Sending city to backend: ${city}`);
+      console.log(`🏙️ City: ${city}`);
     }
-    
-    // Add soil parameter
+
+    // Add soil parameter (REQUIRED)
     if (soil) {
       params.append('soil', soil);
+      console.log(`🌱 Soil: ${soil}`);
     }
-    
+
     if (language) {
       params.append('language', language);
     }
-    
+
+
     url += params.toString();
-    
+    console.log(`📡 Full URL: ${url}`);
+
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
     return await response.json();
+
   } catch (error) {
-    console.error("Error fetching prediction:", error);
+    console.error("❌ Error fetching prediction:", error);
     throw error;
   }
 };
