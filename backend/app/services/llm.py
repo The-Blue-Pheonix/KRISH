@@ -2,8 +2,11 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 from functools import lru_cache
+from pathlib import Path
 
-load_dotenv()
+# Load .env from backend folder (2 levels up from this file)
+env_path = Path(__file__).parent.parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 # Configure the API key from environment variable (.env file)
 api_key = os.environ.get("GEMINI_API_KEY")
