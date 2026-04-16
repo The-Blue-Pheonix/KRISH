@@ -1,0 +1,106 @@
+{
+  "navbar": {
+    "product": "Product",
+    "features": "Features",
+    "community": "Community",
+    "contact": "Contact",
+    "get_started": "Get Started"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "krishi_ai": "Krishi AI",
+    "your_farm": "Your Farm",
+    "crop_insights": "Crop Insights",
+    "profit_estimator": "Profit Estimator",
+    "farming_guide": "Farming Guide",
+    "settings": "Settings",
+    "help": "Help & Support",
+    "logout": "Log Out"
+  },
+  "dashboard": {
+    "fetching": "Fetching farm analytics...",
+    "hero": {
+      "tag": "Farm Overview",
+      "heading": "Good Morning! 👋",
+      "desc": "Manage your agricultural operations efficiently with professional insights and AI field optimization.",
+      "city_placeholder": "City",
+      "gps_error": "GPS Error",
+      "gps_detected": "GPS detected",
+      "enable_gps": "Enable GPS for location",
+      "detected": "Detected",
+      "auto_detected": "Auto-detected",
+      "apply_btn": "Apply"
+    },
+    "errors": {
+      "gps_access": "GPS Access",
+      "manual_select": "You can manually select your location above."
+    },
+    "weather": {
+      "title": "Local Climate",
+      "hum": "Hum",
+      "rain": "Rain"
+    },
+    "soil": {
+      "title": "Soil & Irrigation",
+      "moisture_level": "Moisture Level",
+      "recommended_action": "Recommended Action",
+      "irrigate_yes": "Irrigate Field",
+      "irrigate_no": "Do Not Water",
+      "irrigate_monitor": "Monitor"
+    },
+    "ai": {
+      "title": "AI Farm Advisor",
+      "fallback": "Analyzing farm data to generate best action...",
+      "button": "Open Smart Chat"
+    },
+    "main_grid": {
+      "top_recommendation": "Top Recommendation",
+      "cultivation": "Cultivation",
+      "highly_viable": "Highly viable for",
+      "soil_profiles": "soil profiles in this climate",
+      "crop_health": "Crop Health",
+      "optimal": "Optimal",
+      "growth_phase": "Growth Phase",
+      "sowing": "Sowing",
+      "sowing_timeline": "Sowing Timeline",
+      "within_7_days": "Within 7 days",
+      "full_overview": "Full Crop Overview"
+    },
+    "tasks": {
+      "title": "Upcoming Tasks",
+      "active": "Active",
+      "view_all": "View Complete Schedule",
+      "due": "due",
+      "names": {
+        "prepare": "Prepare for",
+        "sowing": "sowing",
+        "watering": "Watering Plants",
+        "treatment": "Crop Treatment",
+        "ph_test": "Soil PH Test"
+      },
+      "dates": {
+        "tomorrow": "Tomorrow",
+        "may_8": "May 8",
+        "may_10": "May 10",
+        "may_15": "May 15"
+      }
+    },
+    "lower": {
+      "profit_title": "Profit Estimator Overview",
+      "based_on": "Based on",
+      "market_futures": "current market futures",
+      "est_revenue": "Est. Revenue",
+      "ly": "vs LY",
+      "maint_cost": "Maintenance Cost",
+      "labor": "Includes Labor",
+      "guide_title": "Farming Guide Highlight",
+      "best_practices": "Best Practices for",
+      "guide_desc": "Master techniques to maximize nutrient retention and build engineered water drainage systems for your local soil type.",
+      "read_article": "Read Full Article"
+    }
+  },
+  "layout": {
+    "search_placeholder": "Search resources...",
+    "verified_account": "Verified Account"
+  }
+}

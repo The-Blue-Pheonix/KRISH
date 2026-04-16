@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   LayoutDashboard, 
   Map, 
@@ -14,13 +15,14 @@ import {
 } from 'lucide-react';
 
 export default function Sidebar({ isOpen, closeSidebar, onLogout }) {
+  const { t } = useTranslation();
   const links = [
-    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-    { name: 'Krishi AI', icon: <Bot size={20} />, path: '/dashboard/ai' },
-    { name: 'Your Farm', icon: <Map size={20} />, path: '/dashboard/farm' },
-    { name: 'Crop Insights', icon: <Sprout size={20} />, path: '/dashboard/crops' },
-    { name: 'Profit Estimator', icon: <DollarSign size={20} />, path: '/dashboard/profit' },
-    { name: 'Farming Guide', icon: <BookOpen size={20} />, path: '/dashboard/guide' },
+    { name: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+    { name: t('sidebar.krishi_ai'), icon: <Bot size={20} />, path: '/dashboard/ai' },
+    { name: t('sidebar.your_farm'), icon: <Map size={20} />, path: '/dashboard/farm' },
+    { name: t('sidebar.crop_insights'), icon: <Sprout size={20} />, path: '/dashboard/crops' },
+    { name: t('sidebar.profit_estimator'), icon: <DollarSign size={20} />, path: '/dashboard/profit' },
+    { name: t('sidebar.farming_guide'), icon: <BookOpen size={20} />, path: '/dashboard/guide' },
   ];
 
   return (
@@ -66,18 +68,18 @@ export default function Sidebar({ isOpen, closeSidebar, onLogout }) {
            className={({isActive}) => `flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${isActive ? 'bg-emerald-50 dark:bg-slate-700 text-emerald-700 dark:text-emerald-400' : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-slate-700 hover:text-neutral-900 dark:hover:text-neutral-100'}`}
         >
           <Settings size={20} />
-          Settings
+          {t('sidebar.settings')}
         </NavLink>
         <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-slate-700 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
           <HelpCircle size={20} />
-          Help & Support
+          {t('sidebar.help')}
         </button>
         <button 
           onClick={() => { onLogout(); closeSidebar(); }}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors mt-2"
         >
           <LogOut size={20} />
-          Log Out
+          {t('sidebar.logout')}
         </button>
       </div>
     </aside>

@@ -24,18 +24,19 @@ def cached_llm_call(prompt: str) -> str:
     try:
         # Try primary model first (best quality)
         try:
-            model = genai.GenerativeModel('veo-3.1-fast-generate-preview')
+            model = genai.GenerativeModel('gemini-2.5-flash')
             response = model.generate_content(prompt)
             return response.text
         except Exception as primary_error:
-            # Fallback to flash model
+            # Fallback to pro model
             print(f"[LLM] Primary model error, trying fallback. Error: {primary_error}")
-            model = genai.GenerativeModel('veo-3.1-fast-generate-preview')
+            model = genai.GenerativeModel('gemini-pro')
             response = model.generate_content(prompt)
             return response.text
             
     except Exception as e:
         error_msg = str(e)
+        print(f"ACTUAL GEMINI ERROR: {error_msg}")
         if "429" in error_msg or "quota" in error_msg.lower():
             return "Quota exceeded. Your daily API limit is reached. Please try again tomorrow or upgrade your API plan."
         if "404" in error_msg or "not found" in error_msg.lower():
@@ -79,47 +80,51 @@ A: The Sundarbans region has coastal sandy soil and marshy/saline soil. Coastal 
 
 def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
     """
-    Takes user input and the ML model's output, and feeds it to the Gemini LLM
-    augmented by the specific soil knowledge base. Uses caching to reduce API calls.
+    Takes user input (including farmer's question) and ML model output,
+    and generates AI recommendation using LLM with knowledge base.
     """
+    
+
     try:
+        user_question = user_input.get('query')
+        
         prompt = f"""
-You are an expert AI Agricultural Assistant for Indian farmers.
+You are an expert AI Agricultural Assistant for Indian farmers in West Bengal.
 
 STRICT RULES:
--First line MUST be clear decision: YES / NO / WAIT
-- Respond ONLY in simple Bengali
-- Use 2–3 short sentences
+- Respond ONLY in simple Bengali (not English)
+- Use 2-3 short sentences max
 - Give practical advice only
 - Do NOT use technical language
--max 3 sentences
--not gave confusing answer
+- If farmer asks a specific question, ANSWER IT first
+- Then provide crop/irrigation recommendation
 
-
-PRIORITY:
-1. Use Knowledge Base if relevant
-2. Otherwise use general agricultural knowledge
-
---- Knowledge Base ---
+--- Knowledge Base (West Bengal Soil Information) ---
 {KNOWLEDGE_BASE}
 
---- User Input ---
+--- Farm Details ---
 Location: {user_input.get('city', 'Unknown')}
 Soil Type: {user_input.get('soil', 'Unknown')}
 Weather: {user_input.get('weather', 'Unknown')}
 
---- AI/ML Model Prediction ---
-Crop: {ml_output.get('predicted_crop', 'Unknown')}
-Irrigation: {ml_output.get('irrigation', 'Unknown')}
+--- ML Model Prediction ---
+Recommended Crop: {ml_output.get('predicted_crop', 'Unknown')}
+Irrigation Need: {ml_output.get('irrigation', 'Unknown')}
 Soil Condition: {ml_output.get('soil_condition', 'Unknown')}
 
+--- Farmer's Question ---
+{user_question if user_question else '(No specific question - provide general farming recommendation)'}
+
 TASK:
-Explain why this crop is suitable and what the farmer should do.
+Answer the farmer's question using the knowledge base and ML recommendations.
+If no question asked, explain why the recommended crop is suitable and what actions to take.
+Respond ONLY in Bengali.
 """
-        # Use cached LLM call to reduce API requests
+        print(f"[LLM] Prompt being sent to Gemini (first 200 chars): {prompt[:200]}")
         return cached_llm_call(prompt)
     except Exception as e:
         error_msg = str(e)
+        print(f"[LLM ERROR] generate_agricultural_insight failed: {error_msg}")
         if "429" in error_msg or "quota" in error_msg.lower():
             return "API quota exceeded. Please enable billing or try again later."
         return f"Error generating Gemini response: {e}"

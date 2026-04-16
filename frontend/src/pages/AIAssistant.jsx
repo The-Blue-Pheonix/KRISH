@@ -40,8 +40,23 @@ export default function AIAssistant() {
     setIsTyping(true);
 
     try {
-      // Call backend API to get AI recommendation with farm context
-      const result = await fetchPrediction(farmData.city, farmData.soil);
+      // Call backend API with user question + farm context
+      console.log('❓ Sending question to LLM:', input);
+      console.log('🌾 Farm data:', farmData);
+      const result = await fetchPrediction({
+        city: farmData.city,
+        soil: farmData.soil,
+        query: input
+      });
+      
+      console.log('📥 Full API response:', result);
+      console.log('🤖 AI Recommendation field:', result?.ai_recommendation);
+      console.log('📋 All keys in response:', Object.keys(result || {}));
+      
+      if (!result?.ai_recommendation) {
+        console.error('❌ ERROR: ai_recommendation is empty!');
+        console.error('Response was:', JSON.stringify(result, null, 2));
+      }
       
       let aiResponse = {
         id: Date.now() + 1,

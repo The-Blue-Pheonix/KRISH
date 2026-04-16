@@ -4,6 +4,35 @@ import requests
 GEOCODING_API_URL = "https://geocoding-api.open-meteo.com/v1/search"
 WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast"
 
+# Bengali to English city name mapping
+BENGALI_TO_ENGLISH_CITIES = {
+    "কলকাতা": "Kolkata",
+    "ঢাকা": "Dhaka",
+    "চট্টগ্রাম": "Chattogram",
+    "ইদিলপুর": "Idilpur",
+    "বর্ধমান": "Barddhaman",
+    "বিষ্ণুপুর": "Bishnupur",
+    "দার্জিলিং": "Darjeeling",
+    "জলপাইগুড়ি": "Jalpaiguri",
+    "সিলিগুড়ি": "Siliguri",
+    "রাংপুর": "Rangpur",
+    "বঙ্গাবিহার": "Bangsabihati",
+    "খেরগাথ": "Khergathal",
+}
+
+def normalize_city_name(city: str) -> str:
+    """Convert Bengali city names to English if needed"""
+    if not city:
+        return city
+    
+    # Check if city is in Bengali and convert to English
+    if city in BENGALI_TO_ENGLISH_CITIES:
+        english_city = BENGALI_TO_ENGLISH_CITIES[city]
+        print(f"[WEATHER] Converting Bengali city '{city}' to English: '{english_city}'")
+        return english_city
+    
+    return city
+
 def get_weather(city: str = None, latitude: float = None, longitude: float = None):
     """
     Fetch real weather data from Open-Meteo API
@@ -21,7 +50,9 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
             if not city:
                 raise ValueError("Either city name or GPS coordinates (latitude, longitude) must be provided")
             
-            print(f"Geocoding city: {city}")
+            # Normalize city name (convert Bengali to English if needed)
+            city = normalize_city_name(city)
+            print(f"[WEATHER] Geocoding city: {city}")
             geo_response = requests.get(GEOCODING_API_URL, params={"name": city, "count": 1})
             geo_response.raise_for_status()
             geo_data = geo_response.json()
@@ -34,7 +65,7 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
             longitude = result["longitude"]
             location_name = result["name"]
         else:
-            print(f"Using provided GPS coordinates: lat={latitude}, lon={longitude}")
+            print(f"[WEATHER] Using provided GPS coordinates: lat={latitude}, lon={longitude}")
             location_name = city if city else "GPS Location"
 
         # 2. Fetch weather using lat/lon

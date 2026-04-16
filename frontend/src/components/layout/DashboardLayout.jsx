@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { Bell, Search, Menu, Moon, Sun, X } from 'lucide-react';
+import { Bell, Search, Menu, Moon, Sun, X, Globe } from 'lucide-react';
 import { supabase } from '../../services/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardLayout() {
+  const { t, i18n } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [user, setUser] = useState(null);
@@ -14,11 +16,16 @@ export default function DashboardLayout() {
   useEffect(() => {
     // 1. Fetch Supabase User
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-      } else {
-        // Fallback user for hackathon testing without login
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUser(user);
+        } else {
+          // Fallback user for hackathon testing without login
+          setUser({ email: 'farmer@krishi.com', user_metadata: { full_name: 'Krishi Demo' } });
+        }
+      } catch (err) {
+        console.warn('Supabase auth lock warning suppressed in dev mode:', err);
         setUser({ email: 'farmer@krishi.com', user_metadata: { full_name: 'Krishi Demo' } });
       }
     };
@@ -83,13 +90,32 @@ export default function DashboardLayout() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
               <input 
                 type="text" 
-                placeholder="Search resources..." 
+                placeholder={t('layout.search_placeholder')}
                 className="bg-neutral-50 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-64 text-neutral-800 dark:text-neutral-200 placeholder-neutral-400"
               />
             </div>
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">
+            {/* Language Selector */}
+            <div className="relative group">
+              <button className="flex items-center gap-1.5 p-2 text-neutral-500 dark:text-neutral-400 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg hover:bg-neutral-50 dark:hover:bg-slate-700 transition-colors">
+                <Globe size={20} />
+                <span className="text-xs font-bold uppercase hidden sm:inline-block">{i18n.language?.split('-')[0] || 'en'}</span>
+              </button>
+              <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-neutral-100 dark:border-slate-700 overflow-hidden hidden group-hover:block z-50">
+                {['en', 'hi', 'bn', 'mr', 'ta'].map((lang) => (
+                  <button 
+                    key={lang}
+                    onClick={() => i18n.changeLanguage(lang)}
+                    className={`block w-full text-left px-4 py-2 text-sm font-medium hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors ${i18n.language?.startsWith(lang) ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-slate-700/50' : 'text-neutral-700 dark:text-neutral-300'}`}
+                  >
+                    {lang === 'en' ? 'English' : lang === 'hi' ? 'हिन्दी' : lang === 'bn' ? 'বাংলা' : lang === 'mr' ? 'मराठी' : 'தமிழ்'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Theme Toggle Button */}
             <button 
               onClick={toggleTheme}
@@ -113,7 +139,7 @@ export default function DashboardLayout() {
                 <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100 line-clamp-1 max-w-[120px]">
                   {user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Farmer"}
                 </p>
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Verified Account</p>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">{t('layout.verified_account')}</p>
               </div>
             </div>
           </div>
