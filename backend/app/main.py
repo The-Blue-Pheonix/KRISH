@@ -55,7 +55,7 @@ def get_recommended_soil(city: str):
         }
 
 @app.get("/predict")
-def predict(city: str = None, soil: str = None, latitude: float = None, longitude: float = None):
+def predict(city: str = None, soil: str = None, latitude: float = None, longitude: float = None, language: str = "en"):
     """
     Complete agricultural prediction pipeline:
     1. Fetch real-time weather data
@@ -103,7 +103,8 @@ def predict(city: str = None, soil: str = None, latitude: float = None, longitud
         user_inputs = {
             "city": weather_location,                    # String: User's location
             "soil": soil,                    # String: Soil type
-            "weather": weather               # Dict: {temperature, humidity, rainfall}
+            "weather": weather,              # Dict: {temperature, humidity, rainfall}
+            "language": language             # Target response language for the AI
         }
         
         ml_outputs = {

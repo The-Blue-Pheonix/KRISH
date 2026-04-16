@@ -1,5 +1,5 @@
 // src/services/api.js
-export const fetchPrediction = async (city, soil, latitude = null, longitude = null) => {
+export const fetchPrediction = async (city, soil, latitude = null, longitude = null, language = "en") => {
   try {
     // Build query parameters
     let url = `http://localhost:8000/predict?`;
@@ -19,6 +19,10 @@ export const fetchPrediction = async (city, soil, latitude = null, longitude = n
     // Add soil parameter
     if (soil) {
       params.append('soil', soil);
+    }
+    
+    if (language) {
+      params.append('language', language);
     }
     
     url += params.toString();

@@ -1,0 +1,101 @@
+{
+  "navbar": {
+    "product": "उत्पाद",
+    "features": "विशेषताएं",
+    "community": "समुदाय",
+    "contact": "संपर्क करें",
+    "get_started": "शुरू करें"
+  },
+  "sidebar": {
+    "dashboard": "डैशबोर्ड",
+    "krishi_ai": "कृषि एआई (AI)",
+    "your_farm": "आपका खेत",
+    "crop_insights": "फसल विवरण",
+    "profit_estimator": "लाभ अनुमानक",
+    "farming_guide": "खेती गाइड",
+    "settings": "सेटिंग्स",
+    "help": "सहायता एवं समर्थन",
+    "logout": "लॉग आउट"
+  },
+  "dashboard": {
+    "fetching": "खेत का डेटा लाया जा रहा है...",
+    "hero": {
+      "tag": "खेत का अवलोकन",
+      "heading": "सुप्रभात! 👋",
+      "desc": "पेशेवर अंतर्दृष्टि और एआई (AI) अनुकूलन के साथ अपने कृषि कार्यों का कुशलता से प्रबंधन करें।",
+      "city_placeholder": "शहर",
+      "gps_error": "जीपीएस त्रुटि",
+      "gps_detected": "जीपीएस मिला",
+      "enable_gps": "लोकेशन के लिए जीपीएस सक्षम करें",
+      "detected": "पता चला",
+      "auto_detected": "स्वतः पता चला",
+      "apply_btn": "लागू करें"
+    },
+    "errors": {
+      "gps_access": "जीपीएस एक्सेस",
+      "manual_select": "आप ऊपर अपना स्थान मैन्युअल रूप से चुन सकते हैं।"
+    },
+    "weather": {
+      "title": "स्थानीय जलवायु",
+      "hum": "नमी",
+      "rain": "बारिश"
+    },
+    "soil": {
+      "title": "मिट्टी और सिंचाई",
+      "moisture_level": "नमी का स्तर",
+      "recommended_action": "अनुशंसित कार्रवाई",
+      "irrigate_yes": "खेत की सिंचाई करें",
+      "irrigate_no": "पानी न दें",
+      "irrigate_monitor": "निगरानी करें"
+    },
+    "ai": {
+      "title": "एआई फार्म सलाहकार",
+      "fallback": "सर्वोत्तम कार्रवाई उत्पन्न करने के लिए खेत के डेटा का विश्लेषण हो रहा है...",
+      "button": "स्मार्ट चैट खोलें"
+    },
+    "main_grid": {
+      "top_recommendation": "शीर्ष सिफारिश",
+      "cultivation": "की खेती",
+      "highly_viable": "इसके लिए अत्यधिक अनुकूल:",
+      "soil_profiles": "मिट्टी इस जलवायु में",
+      "crop_health": "फसल का स्वास्थ्य",
+      "optimal": "सर्वोत्तम",
+      "growth_phase": "विकास का चरण",
+      "sowing": "बुवाई",
+      "sowing_timeline": "बुवाई का समय",
+      "within_7_days": "7 दिनों के भीतर",
+      "full_overview": "संपूर्ण फसल अवलोकन"
+    },
+    "tasks": {
+      "title": "आगामी कार्य",
+      "active": "सक्रिय",
+      "view_all": "संपूर्ण अनुसूची देखें",
+      "due": "बाकी",
+      "names": {
+        "prepare": "के लिए तैयारी करें",
+        "sowing": "की बुवाई",
+        "watering": "पौधों को पानी देना",
+        "treatment": "फसल उपचार",
+        "ph_test": "मिट्टी पीएच परीक्षण"
+      },
+      "dates": {
+        "tomorrow": "कल",
+        "may_8": "8 मई",
+        "may_10": "10 मई",
+        "may_15": "15 मई"
+      }
+    },
+    "lower": {
+      "profit_title": "लाभ अनुमानक अवलोकन",
+      "based_on": "पर आधारित",
+      "market_futures": "वर्तमान बाजार वायदा",
+      "est_revenue": "अनुमानित राजस्व",
+      "ly": "पिछले वर्ष की तुलना में",
+      "maint_cost": "रखरखाव लागत",
+      "labor": "मज़दूरी शामिल है",
+      "guide_title": "खेती गाइड हाइलाइट",
+      "best_practices": "के लिए सर्वोत्तम अभ्यास:",
+      "read_article": "पूरा लेख पढ़ें"
+    }
+  }
+}

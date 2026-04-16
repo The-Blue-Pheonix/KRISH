@@ -82,6 +82,8 @@ def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
     Takes user input and the ML model's output, and feeds it to the Gemini LLM
     augmented by the specific soil knowledge base. Uses caching to reduce API calls.
     """
+    
+
     try:
         prompt = f"""
 You are an expert AI Agricultural Assistant for Indian farmers.
