@@ -10,10 +10,10 @@ export const fetchPrediction = async (city, soil, latitude = null, longitude = n
     if (latitude !== null && longitude !== null) {
       params.append('latitude', latitude);
       params.append('longitude', longitude);
-      console.log(`📍 Sending GPS coordinates to backend: lat=${latitude}, lon=${longitude}`);
+      console.log(` Sending GPS coordinates to backend: lat=${latitude}, lon=${longitude}`);
     } else if (city) {
       params.append('city', city);
-      console.log(`🏙️  Sending city to backend: ${city}`);
+      console.log(`Sending city to backend: ${city}`);
     }
     
     // Add soil parameter
