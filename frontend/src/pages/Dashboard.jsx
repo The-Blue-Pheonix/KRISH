@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fetchPrediction } from '../services/api';
+import { fetchPrediction, getRecommendedSoil } from '../services/api';
+import { useGeolocation } from '../hooks/useGeolocation';
 import { 
   CloudSun, 
   MapPin, 
@@ -13,22 +14,62 @@ import {
   ChevronRight,
   TrendingUp,
   Leaf,
-  BookOpen
+  BookOpen,
+  Loader2,
+  Info
 } from 'lucide-react';
 
 export default function Dashboard() {
+  const { location, loading: geoLoading, error: geoError } = useGeolocation();
   const [city, setCity] = useState("Kolkata");
   const [soil, setSoil] = useState("Alluvial");
-  
+  const [recommendedSoil, setRecommendedSoil] = useState("Alluvial");
   const [loading, setLoading] = useState(true);
+  const [soilLoading, setSoilLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+
+  // Auto-fetch location from GPS and update city
+  useEffect(() => {
+    if (location?.city && location.city !== 'Unknown') {
+      setCity(location.city);
+    }
+  }, [location]);
+
+  // Fetch recommended soil when city changes
+  useEffect(() => {
+    if (city) {
+      const fetchSoil = async () => {
+        setSoilLoading(true);
+        try {
+          const result = await getRecommendedSoil(city);
+          const suggested = result.recommended_soil || "Alluvial";
+          setRecommendedSoil(suggested);
+          // Auto-fill soil if it hasn't been manually changed
+          setSoil(suggested);
+          console.log(`🌱 Auto-detected soil for ${city}: ${suggested}`);
+        } catch (err) {
+          console.error("Error fetching soil:", err);
+          setRecommendedSoil("Alluvial");
+        } finally {
+          setSoilLoading(false);
+        }
+      };
+      fetchSoil();
+    }
+  }, [city]);
 
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchPrediction(city, soil);
+      // Pass GPS coordinates if available, otherwise use city name
+      const result = await fetchPrediction(
+        city, 
+        soil, 
+        location?.latitude || null, 
+        location?.longitude || null
+      );
       setData(result);
     } catch (err) {
       setError("Connecting to backend failed. Make sure your Python backend is running format: uvicorn app.main:app");
@@ -75,28 +116,41 @@ export default function Dashboard() {
         
         {/* Quick Location Settings */}
         <form onSubmit={handleApplyParams} className="dashboard-card p-1.5 flex items-center gap-1 w-full md:w-auto overflow-x-auto">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-slate-700/50 rounded-lg whitespace-nowrap transition-colors">
-             <MapPin size={16} className="text-emerald-600 dark:text-emerald-400" />
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-slate-700/50 rounded-lg whitespace-nowrap transition-colors relative">
+             <div className="relative">
+               {geoLoading && <Loader2 className="absolute -left-6 animate-spin text-emerald-600" size={14} />}
+               <MapPin size={16} className={geoError ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'} />
+             </div>
              <input 
                type="text" 
                value={city}
                onChange={(e) => setCity(e.target.value)}
                className="bg-transparent border-none text-neutral-700 dark:text-neutral-200 focus:ring-0 w-24 text-sm font-medium p-0"
                placeholder="City"
+               title={geoError ? `GPS Error: ${geoError}` : location ? `GPS detected: ${location.fullAddress}` : 'Enable GPS for location'}
              />
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-slate-700/50 rounded-lg whitespace-nowrap transition-colors">
-             <Sprout size={16} className="text-emerald-600 dark:text-emerald-400" />
-             <select 
-               value={soil}
-               onChange={(e) => setSoil(e.target.value)}
-               className="bg-transparent border-none text-neutral-700 dark:text-neutral-200 focus:ring-0 text-sm font-medium p-0 pr-6"
-             >
-               <option value="Alluvial">Alluvial</option>
-               <option value="Laterite">Laterite</option>
-               <option value="Black">Black</option>
-               <option value="Red">Red Soil</option>
-             </select>
+          <div className="relative group">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-slate-700/50 rounded-lg whitespace-nowrap transition-colors">
+               {soilLoading && <Loader2 className="animate-spin text-emerald-600" size={14} />}
+               {!soilLoading && <Sprout size={16} className="text-emerald-600 dark:text-emerald-400" />}
+               <select 
+                 value={soil}
+                 onChange={(e) => setSoil(e.target.value)}
+                 className="bg-transparent border-none text-neutral-700 dark:text-neutral-200 focus:ring-0 text-sm font-medium p-0 pr-6"
+                 title={`Detected: ${recommendedSoil} (click to change)`}
+               >
+                 <option value="Alluvial">Alluvial</option>
+                 <option value="Laterite">Laterite</option>
+                 <option value="Black">Black</option>
+                 <option value="Red">Red</option>
+                 <option value="Terai">Terai</option>
+               </select>
+            </div>
+            {/* Tooltip showing detected soil */}
+            <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 text-xs px-2 py-1 rounded whitespace-nowrap z-50">
+              📍 Detected: <strong>{recommendedSoil}</strong> (you can change)
+            </div>
           </div>
           <button type="submit" className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors ml-1 whitespace-nowrap">
             Apply
@@ -108,6 +162,13 @@ export default function Dashboard() {
         <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 p-4 rounded-xl text-sm border border-amber-200 dark:border-amber-800/50 flex items-center gap-2 transition-colors">
           <AlertCircle size={18} />
           {error}
+        </div>
+      )}
+
+      {geoError && !location && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-xl text-sm border border-blue-200 dark:border-blue-800/50 flex items-center gap-2 transition-colors">
+          <AlertCircle size={18} />
+          📍 GPS Access: {geoError}. You can manually select your location above.
         </div>
       )}
 

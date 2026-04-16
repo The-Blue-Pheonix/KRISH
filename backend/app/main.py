@@ -6,6 +6,7 @@ from app.services.predict import predict_crop
 from app.services.irrigation import irrigation_decision, soil_condition_logic
 from app.services.weather import get_weather
 from app.services.llm import generate_agricultural_insight
+from app.services.soil_mapping import get_soil_by_location
 
 app = FastAPI(title="Smart Agri System API")
 
@@ -27,8 +28,34 @@ app.include_router(recommendation.router, prefix="/recommendation", tags=["Recom
 def health_check():
     return {"status": "ok", "service": "smart-agri-backend"}
 
+@app.get("/get-soil")
+def get_recommended_soil(city: str):
+    """
+    Get recommended soil type for a given city location.
+    
+    Uses West Bengal soil distribution knowledge.
+    
+    Parameters:
+    - city: str - City name
+    
+    Returns: JSON with recommended soil type
+    """
+    try:
+        soil = get_soil_by_location(city)
+        return {
+            "city": city,
+            "recommended_soil": soil,
+            "message": f"Detected soil type for {city}: {soil}",
+            "status": "success"
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "failed"
+        }
+
 @app.get("/predict")
-def predict(city: str, soil: str):
+def predict(city: str = None, soil: str = None, latitude: float = None, longitude: float = None):
     """
     Complete agricultural prediction pipeline:
     1. Fetch real-time weather data
@@ -38,17 +65,27 @@ def predict(city: str, soil: str):
     5. Generate AI recommendations using LLM
     
     Parameters:
-    - city: str - City name (e.g., "Kolkata")
-    - soil: str - Soil type (must be: "Alluvial", "Laterite", "Black", or "Red")
+    - city: str (optional) - City name (e.g., "Kolkata")
+    - soil: str (required) - Soil type (must be: "Alluvial", "Laterite", "Black", or "Red")
+    - latitude: float (optional) - GPS latitude coordinate
+    - longitude: float (optional) - GPS longitude coordinate
+    
+    Note: If latitude & longitude are provided, they take precedence over city name.
+    At least one location parameter (city or GPS coords) and soil type are required.
     
     Returns: JSON with weather, crop prediction, soil condition, irrigation advice, and AI recommendation
     """
     try:
-        # ✅ 1. FETCH WEATHER DATA
-        weather = get_weather(city)
+        # Validate soil parameter
+        if not soil:
+            raise ValueError("soil parameter is required")
+        
+        # ✅ 1. FETCH WEATHER DATA (from GPS coordinates or city name)
+        weather = get_weather(city=city, latitude=latitude, longitude=longitude)
         temp = weather["temperature"]          # Float: Temperature in Celsius
         humidity = weather["humidity"]         # Int: Humidity percentage (0-100)
         rainfall = weather["rainfall"]         # Float: Rainfall in mm
+        weather_location = weather.get("location", city or "Unknown")
 
         # ✅ 2. PREDICT CROP using ML model
         # Parameters: temp (float), humidity (int), rainfall (float), soil (str)
@@ -64,7 +101,7 @@ def predict(city: str, soil: str):
 
         # ✅ 5. GENERATE AI RECOMMENDATION using LLM
         user_inputs = {
-            "city": city,                    # String: User's location
+            "city": weather_location,                    # String: User's location
             "soil": soil,                    # String: Soil type
             "weather": weather               # Dict: {temperature, humidity, rainfall}
         }
@@ -82,9 +119,14 @@ def predict(city: str, soil: str):
             llm_recommendation = f"AI advice unavailable. Please monitor your crops manually. (Error: {str(e)})"
 
         # ✅ RETURN COMPLETE PREDICTION RESULT
+        recommended_soil = get_soil_by_location(weather_location)
+        
         return {
-            "location": city,
+            "location": weather_location,
+            "coordinates": {"latitude": latitude, "longitude": longitude} if latitude and longitude else None,
             "weather": weather,
+            "recommended_soil": recommended_soil,  # Auto-detected soil from location
+            "selected_soil": soil,                  # User-selected soil (may differ from recommended)
             "predicted_crop": crop,
             "soil_condition": soil_condition,
             "irrigation": irrigation,
