@@ -15,8 +15,8 @@ import {
   TrendingUp,
   Leaf,
   BookOpen,
-  Loader2,
-  Info
+  Map as MapIcon,
+  Loader2
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [city, setCity] = useState("Kolkata");
   const [soil, setSoil] = useState("Alluvial");
   const [recommendedSoil, setRecommendedSoil] = useState("Alluvial");
+  
   const [loading, setLoading] = useState(true);
   const [soilLoading, setSoilLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -59,13 +60,6 @@ export default function Dashboard() {
     }
   }, [city]);
 
-  // Save farm data to localStorage for AI Assistant
-  useEffect(() => {
-    localStorage.setItem('farmCity', city);
-    localStorage.setItem('farmSoil', soil);
-    console.log(`💾 Saved farm data: ${city}, ${soil}`);
-  }, [city, soil]);
-
   const loadData = async () => {
     setLoading(true);
     setError(null);
@@ -79,23 +73,14 @@ export default function Dashboard() {
       );
       setData(result);
     } catch (err) {
-      setError("Connecting to backend failed. Make sure your Python backend is running format: uvicorn app.main:app");
+      setError("Connecting to backend failed. To get real AI data, run: uvicorn app.main:app");
       setData({
         location: city,
-        weather: { 
-          temperature: null, 
-          humidity: null, 
-          rainfall: null,
-          rain_probability: null,
-          feels_like: null,
-          cloud_coverage: null,
-          weather: null,
-          description: null
-        },
-        predicted_crop: null,
-        soil_condition: null,
-        irrigation: null,
-        ai_recommendation: "Unable to fetch data. Please ensure the backend is running and try again."
+        weather: { temperature: 28, humidity: 72, rainfall: 4 },
+        predicted_crop: "Rice",
+        soil_condition: "Wet",
+        irrigation: "No",
+        ai_recommendation: "Hold off on watering today since moisture sits high (72%). Ensure the field has appropriate drainage; your rice crop is growing optimally."
       });
     } finally {
       setLoading(false);
@@ -104,14 +89,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadData();
-  }, []); 
+  }, [location?.latitude, location?.longitude]); // Also trigger a load when GPS stabilizes
 
   const handleApplyParams = (e) => {
     e.preventDefault();
     loadData();
   };
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <div className="h-[70vh] flex flex-col items-center justify-center space-y-4">
         <Sprout className="text-emerald-600 dark:text-emerald-400 animate-spin" size={48} />
@@ -121,139 +106,149 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-10">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
-      {/* Header Row */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 transition-colors">Good Morning! 👋</h1>
-          <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1 transition-colors">Optimize Your Farm Operations with Real-Time Insights</p>
-        </div>
+      {/* 1. HERO BANNER */}
+      <div className="relative w-full rounded-2xl overflow-visible shadow-sm h-auto md:h-56 flex flex-col justify-between z-20">
+        {/* Farm Background Image with solid Greenery overlay */}
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=1740&auto=format&fit=crop')] bg-cover bg-center rounded-2xl overflow-hidden"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-emerald-800/80 to-transparent rounded-2xl overflow-hidden"></div>
         
-        {/* Quick Location Settings */}
-        <form onSubmit={handleApplyParams} className="dashboard-card p-1.5 flex items-center gap-1 w-full md:w-auto overflow-x-auto">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-slate-700/50 rounded-lg whitespace-nowrap transition-colors relative">
-             <div className="relative">
-               {geoLoading && <Loader2 className="absolute -left-6 animate-spin text-emerald-600" size={14} />}
-               <MapPin size={16} className={geoError ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'} />
-             </div>
-             <input 
-               type="text" 
-               value={city}
-               onChange={(e) => setCity(e.target.value)}
-               className="bg-transparent border-none text-neutral-700 dark:text-neutral-200 focus:ring-0 w-24 text-sm font-medium p-0"
-               placeholder="City"
-               title={geoError ? `GPS Error: ${geoError}` : location ? `GPS detected: ${location.fullAddress}` : 'Enable GPS for location'}
-             />
-          </div>
-          <div className="relative group">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-50 dark:bg-slate-700/50 rounded-lg whitespace-nowrap transition-colors">
-               {soilLoading && <Loader2 className="animate-spin text-emerald-600" size={14} />}
-               {!soilLoading && <Sprout size={16} className="text-emerald-600 dark:text-emerald-400" />}
-               <select 
-                 value={soil}
-                 onChange={(e) => setSoil(e.target.value)}
-                 className="bg-transparent border-none text-neutral-700 dark:text-neutral-200 focus:ring-0 text-sm font-medium p-0 pr-6"
-                 title={`Detected: ${recommendedSoil} (click to change)`}
-               >
-                 <option value="Alluvial">Alluvial</option>
-                 <option value="Laterite">Laterite</option>
-                 <option value="Black">Black</option>
-                 <option value="Red">Red</option>
-                 <option value="Terai">Terai</option>
-               </select>
+        {/* Banner Content */}
+        <div className="relative z-10 p-6 md:p-8 flex flex-col md:flex-row md:items-end justify-between h-full">
+          <div className="mb-6 md:mb-0">
+            <div className="inline-flex items-center gap-1.5 bg-white/20 text-emerald-50 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm mb-3">
+              <Sprout size={14} /> Farm Overview
             </div>
-            {/* Tooltip showing detected soil */}
-            <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 text-xs px-2 py-1 rounded whitespace-nowrap z-50">
-              📍 Detected: <strong>{recommendedSoil}</strong> (you can change)
-            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">Good Morning! 👋</h1>
+            <p className="text-emerald-100 text-sm md:text-base mt-2 font-medium max-w-lg">
+              Manage your agricultural operations efficiently with professional insights and AI field optimization.
+            </p>
           </div>
-          <button type="submit" className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors ml-1 whitespace-nowrap">
-            Apply
-          </button>
-        </form>
+          
+          {/* Quick Location Settings inside Banner */}
+          <form onSubmit={handleApplyParams} className="bg-white p-2 rounded-xl flex items-center gap-2 shadow-lg w-full md:w-auto overflow-visible relative">
+            
+            <div className="flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-lg whitespace-nowrap">
+               <div className="relative flex items-center">
+                 {geoLoading && <Loader2 className="absolute -left-6 animate-spin text-emerald-600" size={14} />}
+                 <MapPin size={16} className={geoError ? 'text-red-500' : 'text-emerald-600'} />
+               </div>
+               <input 
+                 type="text" 
+                 value={city}
+                 onChange={(e) => setCity(e.target.value)}
+                 className="bg-transparent border-none text-neutral-800 font-bold focus:ring-0 w-20 md:w-24 text-sm p-0 placeholder-neutral-400"
+                 placeholder="City"
+                 title={geoError ? `GPS Error: ${geoError}` : location ? `GPS detected: ${location.fullAddress}` : 'Enable GPS for location'}
+               />
+            </div>
+
+            <div className="relative group">
+              <div className="flex items-center gap-2 px-3 py-2 bg-neutral-50 rounded-lg whitespace-nowrap overflow-visible">
+                 {soilLoading && <Loader2 className="animate-spin text-emerald-600" size={14} />}
+                 {!soilLoading && <MapIcon size={16} className="text-emerald-600" />}
+                 <select 
+                   value={soil}
+                   onChange={(e) => setSoil(e.target.value)}
+                   className="bg-transparent border-none text-neutral-800 font-bold focus:ring-0 text-sm p-0 pr-6"
+                   title={`Detected: ${recommendedSoil} (click to change)`}
+                 >
+                   <option value="Alluvial">Alluvial</option>
+                   <option value="Laterite">Laterite</option>
+                   <option value="Black">Black</option>
+                   <option value="Red">Red</option>
+                   <option value="Terai">Terai</option>
+                 </select>
+              </div>
+              <div className="absolute top-full left-0 mt-2 hidden group-hover:block bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50">
+                📍 Auto-detected: <strong>{recommendedSoil}</strong>
+              </div>
+            </div>
+
+            <button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-colors ml-1">
+              Apply
+            </button>
+          </form>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 p-4 rounded-xl text-sm border border-amber-200 dark:border-amber-800/50 flex items-center gap-2 transition-colors">
+        <div className="bg-red-50 text-red-800 p-4 rounded-xl text-sm border border-red-200 flex items-center gap-2 mt-4 font-medium dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-300">
           <AlertCircle size={18} />
           {error}
         </div>
       )}
 
       {geoError && !location && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-xl text-sm border border-blue-200 dark:border-blue-800/50 flex items-center gap-2 transition-colors">
+        <div className="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm border border-blue-200 flex items-center gap-2 font-medium dark:bg-blue-900/20 dark:border-blue-900/50 dark:text-blue-300">
           <AlertCircle size={18} />
           📍 GPS Access: {geoError}. You can manually select your location above.
         </div>
       )}
 
-      {/* Top 3 Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {/* 2. CORE METRICS ROW */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
-        {/* Large Weather Card */}
-        <div className="dashboard-card p-6 flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <div className="inline-flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 px-2.5 py-1 rounded-full text-xs font-semibold transition-colors">
-              <MapPin size={12} /> {data?.location ?? city}
-            </div>
+        {/* Weather Card */}
+        <div className="dashboard-card p-6 border-t-4 border-t-emerald-500">
+          <div className="flex items-center justify-between mb-4">
+             <h3 className="text-neutral-800 dark:text-neutral-100 font-bold">Local Climate</h3>
+             <div className="px-2 py-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-md text-xs font-bold border border-emerald-100 dark:border-emerald-800">
+               {data?.location ?? city}
+             </div>
           </div>
           
-          <div className="mt-6 flex items-center justify-between">
-             <div>
-               <h2 className="text-sm text-neutral-500 dark:text-neutral-400 font-medium transition-colors">Today's Temp</h2>
-               <div className="flex items-baseline gap-1 mt-1">
-                 <span className="text-4xl font-bold text-neutral-900 dark:text-white transition-colors">{data?.weather?.temperature ?? '--'}°</span>
-                 <span className="text-xl font-medium text-neutral-500 dark:text-neutral-400">C</span>
-               </div>
+          <div className="flex items-center justify-between my-2">
+             <div className="flex items-baseline gap-1">
+               <span className="text-5xl font-black text-neutral-900 dark:text-white">{data?.weather?.temperature ?? '--'}°</span>
              </div>
-             <CloudSun size={56} className="text-amber-500 drop-shadow-sm" />
+             <CloudSun size={48} className="text-amber-500" strokeWidth={1.5} />
           </div>
 
-          <div className="mt-8 flex items-center gap-6 pt-4 border-t border-neutral-100 dark:border-slate-700 text-sm text-neutral-600 dark:text-neutral-300 transition-colors">
-             <div className="flex items-center gap-1.5 font-medium">
-               <Droplets size={16} className="text-blue-500 dark:text-blue-400"/> 
-               {data?.weather?.humidity ?? '--'}% Humidity
+          <div className="mt-6 flex items-center gap-6 text-sm text-neutral-600 dark:text-neutral-400 font-medium">
+             <div className="flex items-center gap-2 bg-neutral-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg w-full">
+               <Droplets size={16} className="text-blue-500"/> 
+               {data?.weather?.humidity ?? '--'}% Hum
              </div>
-             <div className="flex items-center gap-1.5 font-medium">
-               <Wind size={16} className="text-sky-500 dark:text-sky-400"/> 
-               {data?.weather?.rain_probability ?? data?.weather?.rainfall ?? '--'}% Rain
+             <div className="flex items-center gap-2 bg-neutral-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg w-full">
+               <Wind size={16} className="text-emerald-500"/> 
+               {data?.weather?.rainfall ?? '--'}mm Rain
              </div>
           </div>
         </div>
 
-        {/* Soil & Irrigation Action */}
-        <div className="dashboard-card p-6 flex flex-col justify-between">
+        {/* Soil Health Action */}
+        <div className="dashboard-card p-6 border-t-4 border-t-blue-500 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-             <h3 className="text-neutral-800 dark:text-neutral-100 font-bold transition-colors">Soil Health</h3>
-             <Target className="text-neutral-400" size={20} />
+             <h3 className="text-neutral-800 dark:text-neutral-100 font-bold">Soil & Irrigation</h3>
+             <Target className="text-blue-500" size={20} />
           </div>
           
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30 transition-colors">
+          <div className="space-y-3 mt-auto">
+            {/* Condition Row */}
+            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30">
                <div className="flex items-center gap-3">
-                 <div className="p-2 bg-blue-100 dark:bg-blue-800/30 rounded-lg text-blue-600 dark:text-blue-400 transition-colors">
-                   <Droplets size={20} />
+                 <div className="p-2 bg-white dark:bg-slate-800 shadow-sm border border-blue-100 dark:border-blue-800 rounded-lg text-blue-600 dark:text-blue-400">
+                   <Leaf size={18} />
                  </div>
                  <div>
-                   <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-0.5 transition-colors">Condition</p>
-                   <p className="text-lg font-bold text-blue-900 dark:text-blue-300 transition-colors">{data?.soil_condition ?? '--'}</p>
+                   <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-0.5">Moisture Level</p>
+                   <p className="text-lg font-black text-blue-900 dark:text-blue-300">{data?.soil_condition ?? '--'}</p>
                  </div>
                </div>
-               <span className="text-sm font-semibold text-blue-700 dark:text-blue-300 bg-white dark:bg-blue-900/40 px-3 py-1 rounded-full shadow-sm transition-colors">
-                 Estimated
-               </span>
             </div>
 
-            <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${data?.irrigation === 'Yes' ? 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/30'}`}>
+            {/* Irrigation Row */}
+            <div className={`flex items-center justify-between p-3 rounded-xl border ${data?.irrigation === 'Yes' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30' : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/30'}`}>
                <div className="flex items-center gap-3">
-                 <div className={`p-2 rounded-lg transition-colors ${data?.irrigation === 'Yes' ? 'bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400' : 'bg-emerald-100 dark:bg-emerald-800/30 text-emerald-600 dark:text-emerald-400'}`}>
-                   <CheckCircle2 size={20} />
+                 <div className={`p-2 bg-white dark:bg-slate-800 shadow-sm border rounded-lg ${data?.irrigation === 'Yes' ? 'border-amber-100 text-amber-600' : 'border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400'}`}>
+                   <CheckCircle2 size={18} />
                  </div>
                  <div>
-                   <p className={`text-xs font-semibold mb-0.5 transition-colors ${data?.irrigation === 'Yes' ? 'text-amber-700 dark:text-amber-400' : 'text-emerald-700 dark:text-emerald-400'}`}>Irrigation Action</p>
-                   <p className={`text-lg font-bold transition-colors ${data?.irrigation === 'Yes' ? 'text-amber-900 dark:text-amber-300' : 'text-emerald-900 dark:text-emerald-300'}`}>
-                     {data?.irrigation === 'Yes' ? 'Irrigate' : (data?.irrigation === 'No' ? 'Do Not Water' : 'Monitor')}
+                   <p className={`text-xs font-bold uppercase tracking-wider mb-0.5 ${data?.irrigation === 'Yes' ? 'text-amber-700 dark:text-amber-400' : 'text-emerald-700 dark:text-emerald-400'}`}>Recommended Action</p>
+                   <p className={`text-lg font-black ${data?.irrigation === 'Yes' ? 'text-amber-900 dark:text-amber-300' : 'text-emerald-900 dark:text-emerald-300'}`}>
+                     {data?.irrigation === 'Yes' ? 'Irrigate Field' : (data?.irrigation === 'No' ? 'Do Not Water' : 'Monitor')}
                    </p>
                  </div>
                </div>
@@ -261,152 +256,157 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* AI Recommendation */}
-        <div className="dashboard-card p-6 bg-emerald-700 dark:bg-emerald-800 text-white border-transparent relative overflow-hidden flex flex-col md:col-span-2 xl:col-span-1 transition-colors">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full"></div>
-           
-           <div className="flex flex-col h-full relative z-10">
-             <div className="flex items-center gap-2 mb-4">
-               <span className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm"><Sprout size={16} /></span>
-               <h3 className="font-semibold text-emerald-50 tracking-wide text-sm uppercase">Krishi AI Recommendation</h3>
-             </div>
-             
-             <div className="flex-1 mt-2">
-               <p className="text-base font-medium leading-relaxed drop-shadow-sm line-clamp-4">
-                 {data?.ai_recommendation || "Analyzing farm data for best action..."}
-               </p>
-             </div>
-             
-             <button 
-               onClick={() => window.location.href = '/dashboard/ai'}
-               className="mt-6 w-full py-2.5 bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-colors shadow-sm"
-             >
-               Ask AI Assistant
-             </button>
+        {/* AI Recommendation Spotlight */}
+        <div className="dashboard-card p-6 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 flex flex-col w-full md:col-span-2 lg:col-span-1 shadow-inner">
+           <div className="flex items-center gap-2 mb-3">
+             <span className="p-1.5 bg-emerald-200 dark:bg-emerald-800 rounded-lg text-emerald-700 dark:text-emerald-300"><Sprout size={16} /></span>
+             <h3 className="font-bold text-emerald-900 dark:text-emerald-100">AI Farm Advisor</h3>
            </div>
+           
+           <div className="flex-1 my-2 bg-white dark:bg-slate-800 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/50 relative shadow-sm">
+             <div className="absolute top-4 -left-2 w-4 h-4 bg-white dark:bg-slate-800 border-l border-b border-emerald-100 dark:border-emerald-800/50 rotate-45"></div>
+             <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200 leading-relaxed relative z-10 line-clamp-4">
+               {data?.ai_recommendation || "Analyzing farm data to generate best action..."}
+             </p>
+           </div>
+           
+           <button 
+             onClick={() => window.location.href = '/dashboard/ai'}
+             className="mt-4 w-full py-3 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+           >
+             Open Smart Chat <ChevronRight size={16}/>
+           </button>
         </div>
       </div>
 
-      {/* Main Middle Section Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
+      {/* 3. MAIN CONTENT GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
         
-        {/* Predicted Crop / Field Image */}
-        <div className="lg:col-span-2 dashboard-card overflow-hidden flex flex-col">
-           <div className="relative h-72 w-full">
+        {/* Recommended Crop Deep Dive */}
+        <div className="lg:col-span-2 dashboard-card border-none overflow-hidden flex flex-col shadow-md">
+           <div className="relative h-64 w-full bg-neutral-100">
              <img 
-               src="https://images.unsplash.com/photo-1625246333195-78d9c38ad849?q=80&w=1740&auto=format&fit=crop" 
+               src="https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?q=80&w=1600&auto=format&fit=crop" 
                className="w-full h-full object-cover" 
-               alt="Farm Field" 
+               alt="Suggested Crop Image" 
              />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-             <div className="absolute bottom-4 left-6 right-6">
-               <h2 className="text-white text-2xl font-bold shadow-sm mb-1">Recommended Cultivation: {data?.predicted_crop ?? '...'}</h2>
-               <p className="text-emerald-100 text-sm font-medium">Suitable for {soil} soil type</p>
+             <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-neutral-900/20 to-transparent"></div>
+             <div className="absolute bottom-6 left-6 right-6">
+               <div className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider mb-2 inline-block">Top Recommendation</div>
+               <h2 className="text-white text-3xl font-black drop-shadow-lg">{data?.predicted_crop ?? '...'} Cultivation</h2>
+               <p className="text-emerald-100 text-sm font-medium mt-1 flex items-center gap-1.5"><MapIcon size={14}/> Highly viable for {soil} soil profiles in this climate</p>
              </div>
            </div>
            
-           <div className="p-6 bg-white dark:bg-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
-              <div className="grid grid-cols-3 gap-4 sm:gap-8 w-full sm:w-auto">
-                <div>
-                  <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide transition-colors">Crop Health</p>
-                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1.5 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Excellent
+           <div className="p-6 bg-white dark:bg-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-full md:w-auto">
+                <div className="bg-neutral-50 dark:bg-slate-700/30 p-3 rounded-lg border border-neutral-100 dark:border-slate-600">
+                  <p className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">Crop Health</p>
+                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span> Optimal
                   </p>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide transition-colors">Pesticide Use</p>
-                  <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-1 transition-colors">Low</p>
+                <div className="bg-neutral-50 dark:bg-slate-700/30 p-3 rounded-lg border border-neutral-100 dark:border-slate-600">
+                  <p className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">Growth Phase</p>
+                  <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-1">Sowing</p>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide transition-colors">Suggested Sowing</p>
-                  <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-1 transition-colors">Within 7 days</p>
+                <div className="bg-neutral-50 dark:bg-slate-700/30 p-3 rounded-lg border border-neutral-100 dark:border-slate-600 col-span-2 sm:col-span-1">
+                  <p className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">Sowing Timeline</p>
+                  <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-1">Within 7 days</p>
                 </div>
               </div>
-              <button className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:border-emerald-300 dark:hover:border-emerald-600 px-4 py-2 rounded-lg transition-colors bg-emerald-50 dark:bg-emerald-900/20 whitespace-nowrap w-full sm:w-auto text-center">
-                Detailed Analysis
+              <button 
+                onClick={() => window.location.href='/dashboard/crops'} 
+                className="text-sm font-bold text-emerald-700 dark:text-emerald-400 border-2 border-emerald-600 dark:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 px-6 py-3 rounded-xl transition-colors w-full md:w-auto mt-2 md:mt-0"
+              >
+                Full Crop Overview
               </button>
            </div>
         </div>
 
-        {/* Task List replacing charts for now */}
-        <div className="lg:col-span-1 dashboard-card p-6 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 transition-colors">Upcoming Tasks</h3>
-            <button className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">View all</button>
+        {/* Task List */}
+        <div className="lg:col-span-1 dashboard-card p-0 flex flex-col h-full bg-white dark:bg-slate-800 border-neutral-200 dark:border-slate-700">
+          <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-slate-700">
+            <h3 className="text-lg font-black text-neutral-900 dark:text-neutral-100">Upcoming Tasks</h3>
+            <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400 px-3 py-1 rounded-full text-xs font-bold">4 Active</span>
           </div>
           
-          <div className="space-y-4 flex-1">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {[
-              { name: `Prepare for ${data?.predicted_crop ?? 'Crop'} sowing`, date: 'Tomorrow', due: '1d due', icon: <Tractor size={18} /> },
-              { name: 'Watering Plants', date: 'May 8', due: '2d due', icon: <Droplets size={18} /> },
-              { name: 'Crop Treatment', date: 'May 10', due: '4d due', icon: <Sprout size={18} /> },
-              { name: 'Soil PH Test', date: 'May 15', due: '9d due', icon: <Leaf size={18} /> },
+              { name: `Prepare for ${data?.predicted_crop ?? 'Crop'} sowing`, date: 'Tomorrow', due: '1d due', icon: <Tractor size={18} />, color: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30' },
+              { name: 'Watering Plants', date: 'May 8', due: '2d due', icon: <Droplets size={18} />, color: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30' },
+              { name: 'Crop Treatment', date: 'May 10', due: '4d due', icon: <Sprout size={18} />, color: 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30' },
+              { name: 'Soil PH Test', date: 'May 15', due: '9d due', icon: <Leaf size={18} />, color: 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/30' },
             ].map((task, i) => (
-              <div key={i} className="flex items-center justify-between p-3.5 hover:bg-neutral-50 dark:hover:bg-slate-700/50 rounded-xl border border-transparent hover:border-neutral-100 dark:hover:border-slate-600 transition-all group cursor-pointer">
+              <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white dark:bg-slate-800 hover:bg-neutral-50 dark:hover:bg-slate-700/50 rounded-xl border border-neutral-100 dark:border-slate-700 shadow-sm cursor-pointer transition-colors group">
                 <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-slate-700 text-neutral-600 dark:text-neutral-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center border ${task.color}`}>
                      {task.icon}
                    </div>
                    <div>
-                     <p className="text-neutral-900 dark:text-neutral-200 font-semibold text-sm transition-colors">{task.name}</p>
-                     <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-0.5 transition-colors">{task.date}</p>
+                     <p className="text-neutral-900 dark:text-neutral-200 font-bold text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{task.name}</p>
+                     <p className="text-neutral-500 dark:text-neutral-400 font-medium text-xs mt-0.5">{task.date}</p>
                    </div>
                 </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold px-2 py-1 rounded bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800/30 transition-colors">
+                <div className="mt-3 sm:mt-0 text-right">
+                  <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-400">
                     {task.due}
                   </span>
                 </div>
-              </div> 
+              </div>
             ))}
+          </div>
+          <div className="p-4 border-t border-neutral-100 dark:border-slate-700">
+             <button className="w-full py-2 text-sm font-bold text-neutral-500 hover:text-emerald-600 transition-colors">View Complete Schedule</button>
           </div>
         </div>
 
       </div>
 
-      {/* Lower Section: Profit & Community Insights */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+      {/* 4. LOWER METRICS ROW */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
         
         {/* Expected Yield & Profit Preview Card */}
-        <div className="dashboard-card p-6">
+        <div className="dashboard-card p-6 border-l-4 border-l-amber-400">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 transition-colors">
-               <TrendingUp className="text-emerald-500" size={20}/> Profit Estimator Overview
+            <h3 className="text-lg font-black text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+               <TrendingUp className="text-amber-500" size={20}/> Profit Estimator Overview
             </h3>
             <button className="p-1 rounded-md text-neutral-400 hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors"><ChevronRight size={20}/></button>
           </div>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 transition-colors mb-6">Based on {data?.predicted_crop ?? 'your crop'} market values</p>
+          <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-6">Based on {data?.predicted_crop ?? 'your crop'} current market futures</p>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800/30 transition-colors">
-               <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mb-1 uppercase">Est. Revenue</p>
-               <p className="text-xl font-bold text-emerald-900 dark:text-emerald-300">₹45,000</p>
-               <p className="text-[10px] text-emerald-600 dark:text-emerald-500 mt-1">+12% from last season</p>
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+               <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-1 uppercase tracking-widest">Est. Revenue</p>
+               <p className="text-2xl font-black text-emerald-900 dark:text-emerald-300">₹45,000</p>
+               <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-2 bg-emerald-100 dark:bg-emerald-800/50 inline-block px-2 py-0.5 rounded-sm">+12% vs LY</p>
             </div>
-            <div className="p-4 bg-neutral-50 dark:bg-slate-700/50 rounded-xl border border-neutral-100 dark:border-slate-600 transition-colors">
-               <p className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold mb-1 uppercase">Maintenance Cost</p>
-               <p className="text-xl font-bold text-neutral-900 dark:text-neutral-200">₹12,400</p>
-               <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-1">Water, Fertilizer, Labor</p>
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
+               <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold mb-1 uppercase tracking-widest">Maintenance Cost</p>
+               <p className="text-2xl font-black text-amber-900 dark:text-amber-300">₹12,400</p>
+               <p className="text-[10px] font-bold text-amber-700 dark:text-amber-500 mt-2 bg-amber-100 dark:bg-amber-800/50 inline-block px-2 py-0.5 rounded-sm">Includes Labor</p>
             </div>
           </div>
         </div>
 
         {/* Wiki/Guide Snapshot */}
-        <div className="dashboard-card p-6">
+        <div className="dashboard-card p-6 border-l-4 border-l-blue-400">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 transition-colors">
-               <BookOpen className="text-emerald-500" size={20}/> Farming Guide Highlight
+            <h3 className="text-lg font-black text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+               <BookOpen className="text-blue-500" size={20}/> Farming Guide Highlight
             </h3>
             <button className="p-1 rounded-md text-neutral-400 hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors"><ChevronRight size={20}/></button>
           </div>
           
-          <div className="flex gap-4 p-4 rounded-xl hover:bg-neutral-50 dark:hover:bg-slate-700/50 border border-transparent hover:border-neutral-100 dark:hover:border-slate-600 transition-colors cursor-pointer group">
-             <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+          <div className="flex gap-4 p-4 rounded-xl bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 transition-colors cursor-pointer group">
+             <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-neutral-200 dark:border-slate-700">
                <img src="https://images.unsplash.com/photo-1592982537447-6f2ea3054f9a?w=400&q=80" alt="Soil Tips" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
              </div>
              <div>
-                <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Best Practices for {soil} Soil</h4>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-2 transition-colors">Learn how to maximize nutrient retention and improve water drainage systems specifically engineered for your local soil type context.</p>
+                <h4 className="text-sm font-black text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Best Practices for {soil} Soil</h4>
+                <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400 mt-1.5 leading-relaxed line-clamp-2">Master techniques to maximize nutrient retention and build engineered water drainage systems for your local soil type.</p>
+                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 mt-2 inline-block uppercase tracking-wider">Read Full Article &rarr;</span>
              </div>
           </div>
         </div>
