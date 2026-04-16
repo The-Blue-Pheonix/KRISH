@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sprout, CloudRain, ShieldAlert, MoreHorizontal } from 'lucide-react';
-import { fetchPrediction } from '../services/api';
+import { chatWithAI } from '../services/api';
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState([
@@ -40,28 +40,13 @@ export default function AIAssistant() {
     setIsTyping(true);
 
     try {
-      // Call backend API with user question + farm context
-      console.log('❓ Sending question to LLM:', input);
-      console.log('🌾 Farm data:', farmData);
-      const result = await fetchPrediction({
-        city: farmData.city,
-        soil: farmData.soil,
-        query: input
-      });
-      
-      console.log('📥 Full API response:', result);
-      console.log('🤖 AI Recommendation field:', result?.ai_recommendation);
-      console.log('📋 All keys in response:', Object.keys(result || {}));
-      
-      if (!result?.ai_recommendation) {
-        console.error('❌ ERROR: ai_recommendation is empty!');
-        console.error('Response was:', JSON.stringify(result, null, 2));
-      }
+      // Call backend API to get actual chat response
+      const result = await chatWithAI(input, farmData.city, farmData.soil);
       
       let aiResponse = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: result?.ai_recommendation || 'Unable to generate recommendation. Please try again.'
+        text: result?.response || 'Unable to generate recommendation. Please try again.'
       };
       
       setMessages((prev) => [...prev, aiResponse]);

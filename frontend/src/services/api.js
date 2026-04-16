@@ -1,11 +1,4 @@
-// src/services/api.js
-export const fetchPrediction = async ({
-  city = null,
-  soil,
-  query = null,
-  latitude = null,
-  longitude = null
-}) => {
+export const fetchPrediction = async (city = null, soil, latitude = null, longitude = null, language = "en") => {
   try {
     let url = `http://localhost:8000/predict?`;
     const params = new URLSearchParams();
@@ -26,11 +19,10 @@ export const fetchPrediction = async ({
       console.log(`🌱 Soil: ${soil}`);
     }
 
-    // Add user's question for LLM
-    if (query && typeof query === 'string' && query.trim()) {
-      params.append('query', encodeURIComponent(query));
-      console.log(`❓ Query: ${query}`);
+    if (language) {
+      params.append('language', language);
     }
+
 
     url += params.toString();
     console.log(`📡 Full URL: ${url}`);

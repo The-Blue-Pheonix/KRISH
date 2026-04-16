@@ -19,6 +19,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message: str
+    city: str
+    soil: str
+
+@app.post("/chat")
+def chat_with_ai(request: ChatRequest):
+    try:
+        from app.services.llm import cached_llm_call
+        
+        prompt = f"""
+You are Krishi AI Advisor, an expert Agricultural Assistant holding a conversation with an Indian farmer in {request.city} (Soil Type: {request.soil}).
+Rule: Respond to the farmer concisely, strictly addressing their question. Be practical and friendly. Use short sentences.
+Try replying in standard English or Bengali depending on the query (Default: English). Do not use technical jargon.
+
+Farmer asks: "{request.message}"
+"""
+        response_text = cached_llm_call(prompt)
+        return {"response": response_text}
+    except Exception as e:
+        return {"error": str(e), "response": "Sorry, I am having trouble connecting to my agricultural database right now."}
+
+
 # ✅ Routers
 app.include_router(farmer.router, prefix="/farmer", tags=["Farmer"])
 app.include_router(sensor.router, prefix="/sensor", tags=["Sensor"])
@@ -53,10 +78,32 @@ def get_recommended_soil(city: str):
 def predict(
     city: str = None,
     soil: str = None,
-    query: str = None,   # 🔥 ADDED (user question)
+    query: str = None,
     latitude: float = None,
-    longitude: float = None
+    longitude: float = None,
+    language: str = "en"
 ):
+    """
+    Complete agricultural prediction pipeline:
+    1. Fetch real-time weather data
+    2. Predict suitable crops using ML model
+    3. Analyze soil condition based on rainfall
+    4. Determine irrigation requirements
+    5. Generate AI recommendations using LLM
+
+    Parameters:
+    - city: str (optional) - City name (e.g., "Kolkata")
+    - soil: str (required) - Soil type (must be: "Alluvial", "Laterite", "Black", or "Red")
+    - query: str (optional) - Farmer's specific question for the AI
+    - latitude: float (optional) - GPS latitude coordinate
+    - longitude: float (optional) - GPS longitude coordinate
+    - language: str (optional) - Target response language for the AI (default: "en")
+
+    Note: If latitude & longitude are provided, they take precedence over city name.
+    At least one location parameter (city or GPS coords) and soil type are required.
+
+    Returns: JSON with weather, crop prediction, soil condition, irrigation advice, and AI recommendation
+    """
     try:
         # 🔒 Validate input
         if not soil:
@@ -93,7 +140,8 @@ def predict(
             "city": weather_location,
             "soil": soil,
             "weather": weather,
-            "query": query   # 🔥 IMPORTANT
+            "query": query,
+            "language": language
         }
 
         ml_outputs = {

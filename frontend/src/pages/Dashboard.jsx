@@ -66,13 +66,14 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      // Call backend with either GPS coordinates or city name + soil
-      const result = await fetchPrediction({
-        city: city,
-        soil: soil,
-        latitude: location?.latitude || null,
-        longitude: location?.longitude || null
-      });
+      // Pass GPS coordinates if available, otherwise use city name
+      const result = await fetchPrediction(
+        city,
+        soil,
+        location?.latitude || null,
+        location?.longitude || null,
+        i18n.language
+      );
       setData(result);
     } catch (err) {
       setError("Connecting to backend failed. To get real AI data, run: uvicorn app.main:app");

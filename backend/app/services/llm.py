@@ -30,7 +30,7 @@ def cached_llm_call(prompt: str) -> str:
         except Exception as primary_error:
             # Fallback to pro model
             print(f"[LLM] Primary model error, trying fallback. Error: {primary_error}")
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-3.1-pro-preview')
             response = model.generate_content(prompt)
             return response.text
             
