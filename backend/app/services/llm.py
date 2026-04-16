@@ -24,18 +24,19 @@ def cached_llm_call(prompt: str) -> str:
     try:
         # Try primary model first (best quality)
         try:
-            model = genai.GenerativeModel('veo-3.1-fast-generate-preview')
+            model = genai.GenerativeModel('gemini-2.5-flash')
             response = model.generate_content(prompt)
             return response.text
         except Exception as primary_error:
             # Fallback to flash model
             print(f"[LLM] Primary model error, trying fallback. Error: {primary_error}")
-            model = genai.GenerativeModel('veo-3.1-fast-generate-preview')
+            model = genai.GenerativeModel('gemini-3.1-pro-preview')
             response = model.generate_content(prompt)
             return response.text
             
     except Exception as e:
         error_msg = str(e)
+        print(f"ACTUAL GEMINI ERROR: {error_msg}")
         if "429" in error_msg or "quota" in error_msg.lower():
             return "Quota exceeded. Your daily API limit is reached. Please try again tomorrow or upgrade your API plan."
         if "404" in error_msg or "not found" in error_msg.lower():

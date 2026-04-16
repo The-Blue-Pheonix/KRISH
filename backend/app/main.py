@@ -19,6 +19,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from pydantic import BaseModel
+class ChatRequest(BaseModel):
+    message: str
+    city: str
+    soil: str
+
+@app.post("/chat")
+def chat_with_ai(request: ChatRequest):
+    try:
+        from app.services.llm import cached_llm_call
+        
+        prompt = f"""
+You are Krishi AI Advisor, an expert Agricultural Assistant holding a conversation with an Indian farmer in {request.city} (Soil Type: {request.soil}).
+Rule: Respond to the farmer concisely, strictly addressing their question. Be practical and friendly. Use short sentences.
+Try replying in standard English or Bengali depending on the query (Default: English). Do not use technical jargon.
+
+Farmer asks: "{request.message}"
+"""
+        response_text = cached_llm_call(prompt)
+        return {"response": response_text}
+    except Exception as e:
+        return {"error": str(e), "response": "Sorry, I am having trouble connecting to my agricultural database right now."}
+
+
 app.include_router(farmer.router, prefix="/farmer", tags=["Farmer"])
 app.include_router(sensor.router, prefix="/sensor", tags=["Sensor"])
 app.include_router(recommendation.router, prefix="/recommendation", tags=["Recommendation"])

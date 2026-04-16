@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sprout, CloudRain, ShieldAlert, MoreHorizontal } from 'lucide-react';
-import { fetchPrediction } from '../services/api';
+import { chatWithAI } from '../services/api';
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState([
@@ -40,13 +40,13 @@ export default function AIAssistant() {
     setIsTyping(true);
 
     try {
-      // Call backend API to get AI recommendation with farm context
-      const result = await fetchPrediction(farmData.city, farmData.soil);
+      // Call backend API to get actual chat response
+      const result = await chatWithAI(input, farmData.city, farmData.soil);
       
       let aiResponse = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: result?.ai_recommendation || 'Unable to generate recommendation. Please try again.'
+        text: result?.response || 'Unable to generate recommendation. Please try again.'
       };
       
       setMessages((prev) => [...prev, aiResponse]);
