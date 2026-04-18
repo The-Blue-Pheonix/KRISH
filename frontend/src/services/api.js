@@ -53,12 +53,12 @@ export const getRecommendedSoil = async (city) => {
   }
 };
 
-export const chatWithAI = async (message, city, soil) => {
+export const chatWithAI = async (message, city, soil, language = "en") => {
   try {
     const response = await fetch(`http://localhost:8000/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, city, soil })
+      body: JSON.stringify({ message, city, soil, language })
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sprout, CloudRain, ShieldAlert, MoreHorizontal } from 'lucide-react';
 import { chatWithAI } from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function AIAssistant() {
+  const { i18n } = useTranslation();
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -40,8 +42,8 @@ export default function AIAssistant() {
     setIsTyping(true);
 
     try {
-      // Call backend API to get actual chat response
-      const result = await chatWithAI(input, farmData.city, farmData.soil);
+      // Call backend API to get actual chat response with current language
+      const result = await chatWithAI(input, farmData.city, farmData.soil, i18n.language);
       
       let aiResponse = {
         id: Date.now() + 1,

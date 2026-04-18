@@ -25,16 +25,28 @@ class ChatRequest(BaseModel):
     message: str
     city: str
     soil: str
+    language: str = "en"  # Language parameter with default value
 
 @app.post("/chat")
 def chat_with_ai(request: ChatRequest):
     try:
-        from app.services.llm import cached_llm_call
+        from app.services.llm import cached_llm_call, LANGUAGE_CONFIG
+        
+        # Validate and get language config
+        user_language = request.language.lower() if request.language else "en"
+        if user_language not in LANGUAGE_CONFIG:
+            user_language = "en"
+        
+        lang_config = LANGUAGE_CONFIG[user_language]
         
         prompt = f"""
 You are Krishi AI Advisor, an expert Agricultural Assistant holding a conversation with an Indian farmer in {request.city} (Soil Type: {request.soil}).
+
+🚨 CRITICAL RULE:
+{lang_config['rule']}
+
 Rule: Respond to the farmer concisely, strictly addressing their question. Be practical and friendly. Use short sentences.
-Try replying in standard English or Bengali depending on the query (Default: English). Do not use technical jargon.
+Do not use technical jargon. Do NOT suggest checking external apps or websites.
 
 Farmer asks: "{request.message}"
 """
@@ -140,6 +152,7 @@ def predict(
             "city": weather_location,
             "soil": soil,
             "weather": weather,
+            "weather_condition": weather["weather"],
             "query": query,
             "language": language
         }

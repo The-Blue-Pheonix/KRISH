@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 from functools import lru_cache
 from pathlib import Path
+import time
+from typing import Dict
+import hashlib
 
 # Load .env from backend folder (2 levels up from this file)
 env_path = Path(__file__).parent.parent.parent / ".env"
@@ -16,37 +19,125 @@ if not api_key:
 genai.configure(api_key=api_key)
 print(f"[LLM] Configured Gemini API with key: {api_key[:10]}...{api_key[-10:]}")
 
-# Cached helper function to reduce API calls
-@lru_cache(maxsize=100)
-def cached_llm_call(prompt: str) -> str:
+# ===== REQUEST THROTTLING & RATE LIMITING =====
+class RequestThrottler:
+    """Prevents rate limiting by throttling requests"""
+    def __init__(self, min_interval=0.5):
+        self.last_request_time = 0
+        self.min_interval = min_interval
+    
+    def wait_if_needed(self):
+        elapsed = time.time() - self.last_request_time
+        if elapsed < self.min_interval:
+            sleep_time = self.min_interval - elapsed
+            print(f"[THROTTLE] Waiting {sleep_time:.2f}s to avoid rate limit...")
+            time.sleep(sleep_time)
+        self.last_request_time = time.time()
+
+throttler = RequestThrottler(min_interval=0.5)
+
+# ===== SMART CACHING =====
+prompt_cache: Dict[str, str] = {}  # Fresh cache on each server restart
+cache_hits = 0
+cache_misses = 0
+
+def get_cache_key(prompt: str) -> str:
+    """Generate cache key from prompt (first 100 chars + hash)"""
+    return hashlib.md5(prompt.encode()).hexdigest()
+
+def clear_llm_cache():
+    """Clear the LLM response cache (useful for debugging or API changes)"""
+    global prompt_cache, cache_hits, cache_misses
+    prompt_cache.clear()
+    cache_hits = 0
+    cache_misses = 0
+    print("[CACHE] Cleared all cached responses")
+
+def cached_llm_call(prompt: str, max_retries: int = 3) -> str:
     """
-    Cached wrapper for Gemini LLM calls
-    Uses gemini-2.5-pro (latest production model)
-    Falls back to gemini-2.5-flash if needed
+    Cached wrapper for Gemini LLM calls with retry logic
+    - Reduces API calls via intelligent caching
+    - Retries on quota errors with exponential backoff
+    - Throttles requests to avoid rate limiting
+    
+    Args:
+        prompt: The prompt to send to Gemini
+        max_retries: Number of retry attempts on quota errors (default: 3)
+    
+    Returns:
+        Generated response text
     """
-    try:
-        # Try primary model first (best quality)
+    global cache_hits, cache_misses
+    
+    cache_key = get_cache_key(prompt)
+    
+    # Check cache first
+    if cache_key in prompt_cache:
+        cache_hits += 1
+        print(f"[CACHE HIT] ({cache_hits} hits, {cache_misses} misses)")
+        return prompt_cache[cache_key]
+    
+    cache_misses += 1
+    print(f"[CACHE MISS] ({cache_hits} hits, {cache_misses} misses)")
+    
+    # Retry logic with exponential backoff
+    for attempt in range(1, max_retries + 1):
         try:
+            # Throttle to prevent rate limiting
+            throttler.wait_if_needed()
+            
+            # Try Gemini API call
             model = genai.GenerativeModel('gemini-2.5-flash')
             response = model.generate_content(prompt)
-            return response.text
-        except Exception as primary_error:
-            # Fallback to pro model
-            print(f"[LLM] Primary model error, trying fallback. Error: {primary_error}")
-            model = genai.GenerativeModel('gemini-3.1-pro-preview')
-            response = model.generate_content(prompt)
-            return response.text
+            result = response.text
             
-    except Exception as e:
-        error_msg = str(e)
-        print(f"ACTUAL GEMINI ERROR: {error_msg}")
-        if "429" in error_msg or "quota" in error_msg.lower():
-            return "Quota exceeded. Your daily API limit is reached. Please try again tomorrow or upgrade your API plan."
-        if "404" in error_msg or "not found" in error_msg.lower():
-            return "Model not found. Please check your API key permissions."
-        if "401" in error_msg or "permission" in error_msg.lower():
-            return "API key authentication failed. Please verify your credentials."
-        return f"Error generating recommendation: {str(e)[:100]}"
+            # Cache only valid responses (not errors or quota messages)
+            if not any(x in result.lower() for x in ["quota", "error", "failed", "❌", "🚨"]):
+                prompt_cache[cache_key] = result
+                print(f"[LLM SUCCESS] Response cached (cache size: {len(prompt_cache)})")
+            else:
+                print(f"[LLM] Skipped caching error response")
+            return result
+            
+        except Exception as e:
+            error_msg = str(e).lower()
+            
+            # Check if it's a quota/rate limit error
+            if "429" in str(e) or "quota" in error_msg or "resource exhausted" in error_msg:
+                if attempt < max_retries:
+                    # Exponential backoff: 2^attempt seconds
+                    wait_time = 2 ** attempt
+                    print(f"[QUOTA ERROR] Attempt {attempt}/{max_retries}. Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    print(f"[QUOTA EXCEEDED] Max retries reached after {max_retries} attempts")
+                    return f"🚨 API quota exceeded. This typically means either:\n" \
+                           f"1. Daily request limit reached (try after 24 hours)\n" \
+                           f"2. Free tier quota exhausted (upgrade to paid plan)\n" \
+                           f"3. Too many concurrent requests (wait a minute and retry)\n" \
+                           f"\nFor now, use local recommendations based on your soil and weather."
+            
+            # Handle other errors
+            error_msg = str(e)
+            print(f"[LLM ERROR] Attempt {attempt}/{max_retries}: {error_msg}")
+            
+            if "404" in str(e) or "not found" in error_msg:
+                return "❌ Model not found. Please check your API key permissions."
+            if "401" in str(e) or "permission" in error_msg or "unauthenticated" in error_msg:
+                return "❌ API key authentication failed. Please verify your GEMINI_API_KEY in .env"
+            if "invalid" in error_msg or "api_key" in error_msg:
+                return "❌ Invalid API key. Check your .env file."
+            
+            # For other errors, retry if attempts remain
+            if attempt < max_retries:
+                wait_time = 2 ** attempt
+                print(f"[RETRY] Attempt {attempt}/{max_retries}. Waiting {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                return f"❌ Error generating recommendation: {str(e)[:100]}"
+    
+    return "❌ Failed to generate recommendation after all retries."
 
 # Define the knowledge base (RAG chunks) provided by the user
 KNOWLEDGE_BASE = """
@@ -81,53 +172,251 @@ Q: What are the main agricultural soils of the Sundarbans?
 A: The Sundarbans region has coastal sandy soil and marshy/saline soil. Coastal sandy soil is used for coconut cultivation and fish farming. Marshy saline soils support mangrove ecosystems. Excess salt and clay generally limit rice and vegetable cultivation.
 """
 
+# Language configuration
+LANGUAGE_CONFIG = {
+    'en': {
+        'name': 'English',
+        'rule': 'ALWAYS respond in English language ONLY',
+        'no_question': 'No question provided - give general advice',
+        'location_label': 'West Bengal, India'
+    },
+    'bn': {
+        'name': 'Bengali',
+        'rule': 'ALWAYS respond in Bengali language ONLY',
+        'no_question': 'কোনো প্রশ্ন নেই - সাধারণ পরামর্শ দিন',
+        'location_label': 'পশ্চিমবঙ্গ'
+    },
+    'hi': {
+        'name': 'Hindi',
+        'rule': 'ALWAYS respond in Hindi language ONLY',
+        'no_question': 'कोई सवाल नहीं दिया गया है - सामान्य सलाह दें',
+        'location_label': 'भारत'
+    },
+    'mr': {
+        'name': 'Marathi',
+        'rule': 'ALWAYS respond in Marathi language ONLY',
+        'no_question': 'कोणतेही प्रश्न दिलेले नाहीत - सामान्य सल्ला द्या',
+        'location_label': 'भारत'
+    },
+    'ta': {
+        'name': 'Tamil',
+        'rule': 'ALWAYS respond in Tamil language ONLY',
+        'no_question': 'கேள்வி எதுவும் இல்லை - பொது ஆலோசனை கொடுக்கவும்',
+        'location_label': 'இந்தியா'
+    }
+}
+
 def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
     """
     Takes user input (including farmer's question) and ML model output,
     and generates AI recommendation using LLM with knowledge base.
+    Responds in the user's selected website language.
     """
     
-
     try:
+        # Get language from user input (default to English)
+        user_language = user_input.get('language', 'en').lower()
+        if user_language not in LANGUAGE_CONFIG:
+            user_language = 'en'
+        
+        lang_config = LANGUAGE_CONFIG[user_language]
         user_question = user_input.get('query')
         
         prompt = f"""
-You are an expert AI Agricultural Assistant for Indian farmers in West Bengal.
+You are an expert Agricultural AI Assistant for farmers in {lang_config['location_label']}.
 
-STRICT RULES:
-- Respond ONLY in simple Bengali (not English)
-- Use 2-3 short sentences max
-- Give practical advice only
-- Do NOT use technical language
-- If farmer asks a specific question, ANSWER IT first
-- Then provide crop/irrigation recommendation
+🚨 CRITICAL RULES (MUST FOLLOW):
+1. {lang_config['rule']}
+2. Use THESE EXACT VALUES provided - DO NOT suggest checking apps
+3. Keep response within 2-3 short sentences MAXIMUM
+4. ANSWER THE FARMER'S QUESTION DIRECTLY
+5. NEVER say "check your weather app" or "see mobile"
+6. NEVER suggest external resources
+7. Use ONLY the data provided below - no hallucinations
 
---- Knowledge Base (West Bengal Soil Information) ---
-{KNOWLEDGE_BASE}
-
---- Farm Details ---
-Location: {user_input.get('city', 'Unknown')}
+⭐ REAL-TIME DATA (Use these exact values):
+Temperature: {user_input['weather'].get('temperature', 'Unknown')} °C
+Humidity: {user_input['weather'].get('humidity', 'Unknown')} %
+Rainfall: {user_input['weather'].get('rainfall', 'Unknown')} mm
+Weather Condition: {user_input.get('weather_condition', 'Unknown')}
 Soil Type: {user_input.get('soil', 'Unknown')}
-Weather: {user_input.get('weather', 'Unknown')}
-
---- ML Model Prediction ---
 Recommended Crop: {ml_output.get('predicted_crop', 'Unknown')}
-Irrigation Need: {ml_output.get('irrigation', 'Unknown')}
-Soil Condition: {ml_output.get('soil_condition', 'Unknown')}
+Irrigation Needed: {ml_output.get('irrigation', 'Unknown')}
 
---- Farmer's Question ---
-{user_question if user_question else '(No specific question - provide general farming recommendation)'}
+❓ Farmer's Question:
+{user_question if user_question else lang_config['no_question']}
 
-TASK:
-Answer the farmer's question using the knowledge base and ML recommendations.
-If no question asked, explain why the recommended crop is suitable and what actions to take.
-Respond ONLY in Bengali.
+📋 TASK (REQUIRED):
+- If asked about TEMPERATURE: Say temp is X°C (use exact value above)
+- If asked about WEATHER: Use weather condition + rainfall data
+- If asked about CROPS: Recommend {ml_output.get('predicted_crop', 'Unknown')} based on soil
+- If asked about WATER: Say irrigation is needed = {ml_output.get('irrigation', 'Unknown')}
+- ANSWER IN {lang_config['name'].upper()} ONLY
+- Be direct and practical
 """
-        print(f"[LLM] Prompt being sent to Gemini (first 200 chars): {prompt[:200]}")
-        return cached_llm_call(prompt)
+        print(f"[LLM] Language: {lang_config['name']} | Prompt (first 200 chars): {prompt[:200]}")
+        response = cached_llm_call(prompt)
+        return response
     except Exception as e:
         error_msg = str(e)
         print(f"[LLM ERROR] generate_agricultural_insight failed: {error_msg}")
-        if "429" in error_msg or "quota" in error_msg.lower():
-            return "API quota exceeded. Please enable billing or try again later."
-        return f"Error generating Gemini response: {e}"
+        # Fallback to local recommendation on any error
+        user_language = user_input.get('language', 'en').lower()
+        if user_language not in LANGUAGE_CONFIG:
+            user_language = 'en'
+        lang_config = LANGUAGE_CONFIG[user_language]
+        return generate_local_recommendation(user_input, ml_output, lang_config)
+
+
+def generate_local_recommendation(user_input: dict, ml_output: dict, lang_config: dict) -> str:
+    """
+    Generate recommendation from local knowledge base when API quota is exceeded.
+    This ensures farmers still get helpful advice even when API limits are hit.
+    """
+    soil = user_input.get('soil', 'Alluvial')
+    temp = user_input['weather'].get('temperature', 0)
+    rainfall = user_input['weather'].get('rainfall', 0)
+    crop = ml_output.get('predicted_crop', 'Rice')
+    irrigation = ml_output.get('irrigation', 'Yes')
+    
+    # Language-specific fallback recommendations
+    recommendations = {
+        'en': generate_english_fallback(soil, crop, temp, rainfall, irrigation),
+        'bn': generate_bengali_fallback(soil, crop, temp, rainfall, irrigation),
+        'hi': generate_hindi_fallback(soil, crop, temp, rainfall, irrigation),
+        'mr': generate_marathi_fallback(soil, crop, temp, rainfall, irrigation),
+        'ta': generate_tamil_fallback(soil, crop, temp, rainfall, irrigation),
+    }
+    
+    language = lang_config.get('name', 'en').lower()
+    if language == 'bengali':
+        language = 'bn'
+    elif language == 'hindi':
+        language = 'hi'
+    elif language == 'marathi':
+        language = 'mr'
+    elif language == 'tamil':
+        language = 'ta'
+    else:
+        language = 'en'
+    
+    return recommendations.get(language, recommendations['en'])
+
+
+def generate_english_fallback(soil: str, crop: str, temp: int, rainfall: int, irrigation: str) -> str:
+    """English fallback recommendations"""
+    rec = f"Your {soil} soil is ideal for {crop}. "
+    if temp > 30:
+        rec += "High temperature detected - ensure adequate water supply. "
+    if rainfall < 5:
+        rec += "Low rainfall - irrigation is recommended. "
+    elif rainfall > 15:
+        rec += "Good rainfall - check field drainage. "
+    rec += f"Current forecast: {irrigation} irrigation needed."
+    return rec
+
+
+def generate_bengali_fallback(soil: str, crop: str, temp: int, rainfall: int, irrigation: str) -> str:
+    """Bengali fallback recommendations"""
+    bengali_soils = {
+        'Alluvial': 'পলিযুক্ত মাটি',
+        'Laterite': 'ল্যাটেরাইট মাটি',
+        'Black': 'কালো মাটি',
+        'Red': 'লাল মাটি'
+    }
+    bengali_crops = {
+        'Rice': 'ধান',
+        'Wheat': 'গম',
+        'Corn': 'ভুট্টা',
+        'Sugarcane': 'আখ',
+        'Jute': 'পাট'
+    }
+    
+    soil_bn = bengali_soils.get(soil, 'আপনার মাটি')
+    crop_bn = bengali_crops.get(crop, 'চাষ') 
+    irrigation_bn = 'প্রয়োজন' if irrigation == 'Yes' else 'করবেন না'
+    
+    rec = f"আপনার {soil_bn} {crop_bn} চাষের জন্য উপযুক্ত। "
+    if temp > 30:
+        rec += "তাপমাত্রা বেশি - পর্যাপ্ত জল নিশ্চিত করুন। "
+    if rainfall < 5:
+        rec += "বৃষ্টি কম - সেচ করার পরামর্শ দিচ্ছি। "
+    rec += f"আজ সেচ {irrigation_bn}।"
+    return rec
+
+
+def generate_hindi_fallback(soil: str, crop: str, temp: int, rainfall: int, irrigation: str) -> str:
+    """Hindi fallback recommendations"""
+    hindi_soils = {
+        'Alluvial': 'जलोढ़ मिट्टी',
+        'Laterite': 'लेटराइट मिट्टी',
+        'Black': 'काली मिट्टी',
+        'Red': 'लाल मिट्टी'
+    }
+    hindi_crops = {
+        'Rice': 'चावल',
+        'Wheat': 'गेहूं',
+        'Corn': 'मकई',
+        'Sugarcane': 'गन्ना',
+        'Jute': 'पटसन'
+    }
+    
+    soil_hi = hindi_soils.get(soil, 'आपकी मिट्टी')
+    crop_hi = hindi_crops.get(crop, 'फसल')
+    irrigation_hi = 'करें' if irrigation == 'Yes' else 'न करें'
+    
+    rec = f"आपकी {soil_hi} {crop_hi} की खेती के लिए उत्तम है। "
+    if temp > 30:
+        rec += "तापमान अधिक है - पर्याप्त पानी दें। "
+    if rainfall < 5:
+        rec += "वर्षा कम है - सिंचाई की सलाह है। "
+    rec += f"आज सिंचाई {irrigation_hi}।"
+    return rec
+
+
+def generate_marathi_fallback(soil: str, crop: str, temp: int, rainfall: int, irrigation: str) -> str:
+    """Marathi fallback recommendations"""
+    marathi_soils = {
+        'Alluvial': 'दोन्या मातीच',
+        'Laterite': 'लॅटेराइट मातीच',
+        'Black': 'काळी माती',
+        'Red': 'लाल माती'
+    }
+    
+    soil_mr = marathi_soils.get(soil, 'तुमची माती')
+    irrigation_mr = 'करण्यास सुचवितो' if irrigation == 'Yes' else 'करू नका'
+    
+    rec = f"तुमची {soil_mr} {crop} शेतीसाठी मूल्यवान आहे। "
+    if temp > 30:
+        rec += "तापमान जास्त आहे - पुरेशी पाणी द्या। "
+    if rainfall < 5:
+        rec += "पाऊस कमी आहे - सिंचन {irrigation_mr}। "
+    return rec
+
+
+def generate_tamil_fallback(soil: str, crop: str, temp: int, rainfall: int, irrigation: str) -> str:
+    """Tamil fallback recommendations"""
+    tamil_soils = {
+        'Alluvial': 'களிமண் மண்',
+        'Laterite': 'லேட்டிரைட் மண்',
+        'Black': 'கருப்பு மண்',
+        'Red': 'சிவந்த மண்'
+    }
+    tamil_crops = {
+        'Rice': 'நெல்',
+        'Wheat': 'கோதுமை',
+        'Corn': 'மக்காச்சோளம்',
+        'Sugarcane': 'கரும்பு',
+        'Jute': 'ஆட்டை'
+    }
+    
+    soil_ta = tamil_soils.get(soil, 'உங்கள் மண்')
+    crop_ta = tamil_crops.get(crop, 'பயிர்')
+    irrigation_ta = 'செய்க' if irrigation == 'Yes' else 'செய்ய வேண்டாம்'
+    
+    rec = f"உங்கள் {soil_ta} {crop_ta} பயிர்ச்செயல்பாட்டிற்கு சிறந்தது. "
+    if temp > 30:
+        rec += "வெப்பநிலை அதிகம் - போதுமான நீர் கொடுக்கவும். "
+    if rainfall < 5:
+        rec += "மழை குறைவு - பாசனம் {irrigation_ta}। "
+    return rec
