@@ -176,12 +176,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 text-red-800 p-4 rounded-xl text-sm border border-red-200 flex items-center gap-2 mt-4 font-medium dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-300">
-          <AlertCircle size={18} />
-          {error}
-        </div>
-      )}
 
       {geoError && !location && (
         <div className="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm border border-blue-200 flex items-center gap-2 font-medium dark:bg-blue-900/20 dark:border-blue-900/50 dark:text-blue-300">
