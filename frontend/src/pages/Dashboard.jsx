@@ -360,7 +360,52 @@ export default function Dashboard() {
 
       </div>
 
-      {/* 4. LOWER METRICS ROW */}
+      {/* 4. FORECAST ROW */}
+      <div className="pt-2">
+        <div className="dashboard-card p-6 border-t-4 border-t-blue-400 flex flex-col w-full shadow-inner">
+           <div className="flex items-center gap-2 mb-4">
+               <CloudSun className="text-blue-500" size={20} />
+               <h3 className="text-lg font-black text-neutral-900 dark:text-neutral-100">{t('dashboard.forecast.title', '7-Day Rain Forecast')}</h3>
+           </div>
+           
+           {data?.weather?.forecast && data.weather.forecast.length > 0 ? (
+             <div className="flex items-end justify-between h-48 mt-4 gap-2 relative">
+               {data.weather.forecast.map((day, idx) => {
+                  const dateObj = new Date(day.date);
+                  const dayName = dateObj.toLocaleDateString(i18n.language || 'en', { weekday: 'short' });
+                  const maxRain = Math.max(...data.weather.forecast.map(d => d.rain || 0), 10);
+                  const heightPct = Math.max(((day.rain || 0) / maxRain) * 100, 2);
+                  
+                  return (
+                    <div key={idx} className="flex flex-col items-center flex-1 group w-full relative">
+                      <div className="w-full flex justify-center h-40 items-end relative">
+                         {/* Tooltip */}
+                         <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-slate-800 text-white text-xs p-2 rounded-lg pointer-events-none transition-opacity whitespace-nowrap z-10 shadow-lg">
+                           <p className="font-bold border-b border-slate-600 pb-1 mb-1">{dateObj.toLocaleDateString()}</p>
+                           <p>Rain: <span className="font-bold text-blue-300">{day.rain} mm</span></p>
+                           <p>High: <span className="font-bold text-orange-300">{day.max_temp}°C</span></p>
+                           <p>Low: <span className="font-bold text-blue-200">{day.min_temp}°C</span></p>
+                         </div>
+                         {/* Bar */}
+                         <div 
+                           className="w-full max-w-[40px] bg-blue-300 dark:bg-blue-600 rounded-t-md transition-all duration-300 group-hover:bg-blue-500 dark:group-hover:bg-blue-400 shadow-sm"
+                           style={{ height: `${heightPct}%` }}
+                         ></div>
+                      </div>
+                      <p className="text-xs font-bold text-neutral-600 dark:text-neutral-400 mt-2">{dayName}</p>
+                    </div>
+                  );
+               })}
+             </div>
+           ) : (
+             <div className="h-48 flex items-center justify-center">
+               <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Forecast data not available.</p>
+             </div>
+           )}
+        </div>
+      </div>
+
+      {/* 5. LOWER METRICS ROW */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
         
         {/* Expected Yield & Profit Preview Card */}
