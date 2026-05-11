@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import farmer, sensor, recommendation
-from services.predict import predict_crop
-from services.irrigation import irrigation_decision, soil_condition_logic
-from services.weather import get_weather
-from services.llm import generate_agricultural_insight
-from services.soil_mapping import get_soil_by_location
+from app.routes import farmer, sensor, recommendation
+from app.services.predict import predict_crop
+from app.services.irrigation import irrigation_decision, soil_condition_logic
+from app.services.weather import get_weather
+from app.services.llm import generate_agricultural_insight
+from app.services.soil_mapping import get_soil_by_location
 
 app = FastAPI(title="Smart Agri System API")
 
@@ -30,7 +30,7 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat_with_ai(request: ChatRequest):
     try:
-        from services.llm import cached_llm_call, LANGUAGE_CONFIG
+        from app.services.llm import cached_llm_call, LANGUAGE_CONFIG
         
         # Validate and get language config
         user_language = request.language.lower() if request.language else "en"
