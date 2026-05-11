@@ -1,4 +1,3 @@
-import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 from functools import lru_cache
@@ -6,18 +5,19 @@ from pathlib import Path
 import time
 from typing import Dict
 import hashlib
+from groq import Groq
 
 # Load .env from backend folder (2 levels up from this file)
 env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-# Configure the API key from environment variable (.env file)
-api_key = os.environ.get("GEMINI_API_KEY")
+# Configure the API key
+api_key = os.environ.get("GROQ_API_KEY")
 if not api_key:
-    raise ValueError("GEMINI_API_KEY not found in environment variables. Please add it to .env file.")
+    raise ValueError("GROQ_API_KEY not found in environment variables. Please add it to .env file.")
 
-genai.configure(api_key=api_key)
-print(f"[LLM] Configured Gemini API with key: {api_key[:10]}...{api_key[-10:]}")
+client = Groq(api_key=api_key)
+print(f"[LLM] Configured Groq API")
 
 # ===== REQUEST THROTTLING & RATE LIMITING =====
 class RequestThrottler:
@@ -86,10 +86,17 @@ def cached_llm_call(prompt: str, max_retries: int = 3) -> str:
             # Throttle to prevent rate limiting
             throttler.wait_if_needed()
             
-            # Try Gemini API call
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            response = model.generate_content(prompt)
-            result = response.text
+            # Try Groq API call
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model="llama-3.1-8b-instant",
+            )
+            result = chat_completion.choices[0].message.content
             
             # Cache only valid responses (not errors or quota messages)
             if not any(x in result.lower() for x in ["quota", "error", "failed", "❌", "🚨"]):
@@ -233,6 +240,7 @@ You are an expert Agricultural AI Assistant for farmers in {lang_config['locatio
 5. NEVER say "check your weather app" or "see mobile"
 6. NEVER suggest external resources
 7. Use ONLY the data provided below - no hallucinations
+8. say hello only first time. If the farmer asks again, skip greetings and get straight to the point.
 
 ⭐ REAL-TIME DATA (Use these exact values):
 Temperature: {user_input['weather'].get('temperature', 'Unknown')} °C
@@ -247,12 +255,12 @@ Irrigation Needed: {ml_output.get('irrigation', 'Unknown')}
 {user_question if user_question else lang_config['no_question']}
 
 📋 TASK (REQUIRED):
-- If asked about TEMPERATURE: Say temp is X°C (use exact value above)
-- If asked about WEATHER: Use weather condition + rainfall data
+- MUST include exactly this temperature in your reply: {user_input['weather'].get('temperature', 'Unknown')}°C
+- MUST include exactly this rainfall in your reply: {user_input['weather'].get('rainfall', 'Unknown')}mm
 - If asked about CROPS: Recommend {ml_output.get('predicted_crop', 'Unknown')} based on soil
 - If asked about WATER: Say irrigation is needed = {ml_output.get('irrigation', 'Unknown')}
 - ANSWER IN {lang_config['name'].upper()} ONLY
-- Be direct and practical
+- Be direct and practical, integrating the live data smoothly into your response.
 """
         print(f"[LLM] Language: {lang_config['name']} | Prompt (first 200 chars): {prompt[:200]}")
         response = cached_llm_call(prompt)
