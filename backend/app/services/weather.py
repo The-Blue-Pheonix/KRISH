@@ -72,7 +72,9 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
         params = {
             "latitude": latitude,
             "longitude": longitude,
-            "current": ["temperature_2m", "relative_humidity_2m", "precipitation", "cloud_cover", "surface_pressure", "wind_speed_10m", "weather_code"]
+            "current": ["temperature_2m", "relative_humidity_2m", "precipitation", "cloud_cover", "surface_pressure", "wind_speed_10m", "weather_code"],
+            "daily": ["weather_code", "temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
+            "timezone": "auto"
         }
         
         response = requests.get(WEATHER_API_URL, params=params)
@@ -80,6 +82,7 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
         
         data = response.json()
         current = data.get("current", {})
+        daily = data.get("daily", {})
         
         # Open-Meteo weather codes (WMO) to text mapping (simplified)
         wmo_code = current.get("weather_code", 0)
@@ -89,6 +92,18 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
         
         cloud_coverage = current.get("cloud_cover", 0)
         
+        # Build daily forecast
+        forecast = []
+        if daily and "time" in daily:
+            for i in range(len(daily["time"])):
+                forecast.append({
+                    "date": daily["time"][i],
+                    "max_temp": daily["temperature_2m_max"][i],
+                    "min_temp": daily["temperature_2m_min"][i],
+                    "rain": daily["precipitation_sum"][i],
+                    "weather_code": daily["weather_code"][i]
+                })
+
         return {
             "temperature": current.get("temperature_2m", 0),
             "feels_like": current.get("temperature_2m", 0), # Open-Meteo current doesn't provide apparent temperature by default
@@ -101,7 +116,8 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
             "pressure": current.get("surface_pressure", 0),
             "visibility": 10000, # Missing in basic current
             "wind_speed": current.get("wind_speed_10m", 0),
-            "location": location_name
+            "location": location_name,
+            "forecast": forecast
         }
     except requests.exceptions.RequestException as e:
         print(f"Error fetching weather data: {e}")
