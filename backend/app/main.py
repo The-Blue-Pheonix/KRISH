@@ -1,16 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from dataclasses import asdict
+import os
+import tempfile
+from dotenv import load_dotenv
 
-<<<<<<< Updated upstream
-from routes import farmer, sensor, recommendation
-from services.predict import predict_crop
-from services.irrigation import irrigation_decision, soil_condition_logic
-from services.weather import get_weather
-from services.llm import generate_agricultural_insight
-from services.soil_mapping import get_soil_by_location
-=======
+load_dotenv()
+
 from app.routes import farmer, sensor, recommendation
 from app.services.predict import predict_crop
 from app.services.irrigation import irrigation_decision, soil_condition_logic
@@ -19,7 +16,6 @@ from app.services.llm import generate_agricultural_insight
 from app.services.soil_mapping import get_soil_by_location
 from app.services.crop_health import get_crop_health
 from app.services.profit import estimate_profit
->>>>>>> Stashed changes
 
 app = FastAPI(title="Smart Agri System API")
 
@@ -73,6 +69,33 @@ Farmer asks: "{request.message}"
 app.include_router(farmer.router, prefix="/farmer", tags=["Farmer"])
 app.include_router(sensor.router, prefix="/sensor", tags=["Sensor"])
 app.include_router(recommendation.router, prefix="/recommendation", tags=["Recommendation"])
+
+import tempfile
+import shutil
+from app.services.plant_disease import analyze_plant_image
+
+@app.post("/plant-disease")
+async def detect_plant_disease(file: UploadFile = File(...)):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File provided is not an image.")
+    
+    try:
+        # Save uploaded file temporarily for Kindwise API
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
+            shutil.copyfileobj(file.file, temp_file)
+            temp_path = temp_file.name
+            
+        # Analyze using Kindwise
+        analysis_result = analyze_plant_image(temp_path)
+        
+        # Clean up temp file
+        os.remove(temp_path)
+        
+        return {"result": analysis_result}
+    except ValueError as ve:
+        raise HTTPException(status_code=401, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/")
