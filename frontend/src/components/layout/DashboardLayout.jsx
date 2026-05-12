@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Bell, Search, Menu, Moon, Sun, X, Globe } from 'lucide-react';
@@ -11,6 +11,25 @@ export default function DashboardLayout() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const langRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        langRef.current &&
+        !langRef.current.contains(event.target)
+      ) {
+        setIsLangOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Load User, Theme, and Hydrate state
   useEffect(() => {
@@ -98,22 +117,47 @@ export default function DashboardLayout() {
           
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Language Selector */}
-            <div className="relative group">
-              <button className="flex items-center gap-1.5 p-2 text-neutral-500 dark:text-neutral-400 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg hover:bg-neutral-50 dark:hover:bg-slate-700 transition-colors">
+            <div className="relative" ref={langRef}>
+    
+              <button
+                onClick={() => setIsLangOpen((prev) => !prev)}
+                className="flex items-center gap-1.5 p-2 text-neutral-500 dark:text-neutral-400 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg hover:bg-neutral-50 dark:hover:bg-slate-700 transition-colors"
+              >
                 <Globe size={20} />
-                <span className="text-xs font-bold uppercase hidden sm:inline-block">{i18n.language?.split('-')[0] || 'en'}</span>
+                <span className="text-xs font-bold uppercase hidden sm:inline-block">
+                  {i18n.language?.split("-")[0] || "en"}
+                </span>
               </button>
-              <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-neutral-100 dark:border-slate-700 overflow-hidden hidden group-hover:block z-50">
-                {['en', 'hi', 'bn', 'mr', 'ta'].map((lang) => (
-                  <button 
-                    key={lang}
-                    onClick={() => i18n.changeLanguage(lang)}
-                    className={`block w-full text-left px-4 py-2 text-sm font-medium hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors ${i18n.language?.startsWith(lang) ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-slate-700/50' : 'text-neutral-700 dark:text-neutral-300'}`}
-                  >
-                    {lang === 'en' ? 'English' : lang === 'hi' ? 'हिन्दी' : lang === 'bn' ? 'বাংলা' : lang === 'mr' ? 'मराठी' : 'தமிழ்'}
-                  </button>
-                ))}
-              </div>
+
+              {isLangOpen && (
+                <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-neutral-100 dark:border-slate-700 overflow-hidden z-50">
+                  
+                  {["en", "hi", "bn", "mr", "ta"].map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        i18n.changeLanguage(lang);
+                        setIsLangOpen(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 text-sm font-medium hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors ${
+                        i18n.language?.startsWith(lang)
+                          ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-slate-700/50"
+                          : "text-neutral-700 dark:text-neutral-300"
+                      }`}
+                    >
+                      {lang === "en"
+                        ? "English"
+                        : lang === "hi"
+                        ? "हिन्दी"
+                        : lang === "bn"
+                        ? "বাংলা"
+                        : lang === "mr"
+                        ? "मराठी"
+                        : "தமிழ்"}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Theme Toggle Button */}
