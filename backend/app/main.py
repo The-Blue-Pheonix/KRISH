@@ -1,12 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
+from dataclasses import asdict
 
+<<<<<<< Updated upstream
 from routes import farmer, sensor, recommendation
 from services.predict import predict_crop
 from services.irrigation import irrigation_decision, soil_condition_logic
 from services.weather import get_weather
 from services.llm import generate_agricultural_insight
 from services.soil_mapping import get_soil_by_location
+=======
+from app.routes import farmer, sensor, recommendation
+from app.services.predict import predict_crop
+from app.services.irrigation import irrigation_decision, soil_condition_logic
+from app.services.weather import get_weather
+from app.services.llm import generate_agricultural_insight
+from app.services.soil_mapping import get_soil_by_location
+from app.services.crop_health import get_crop_health
+from app.services.profit import estimate_profit
+>>>>>>> Stashed changes
 
 app = FastAPI(title="Smart Agri System API")
 
@@ -146,6 +159,17 @@ def predict(
         irrigation = irrigation_decision(temp, rainfall, soil_condition)
 
         # =========================
+        # 4.5️⃣ CROP HEALTH INSIGHTS
+        # =========================
+        health_report = get_crop_health(
+            crop=crop,
+            soil=soil,
+            temp=temp,
+            humidity=humidity,
+            month=datetime.now().month,
+        )
+
+        # =========================
         # 5️⃣ LLM AI RECOMMENDATION
         # =========================
         user_inputs = {
@@ -160,7 +184,8 @@ def predict(
         ml_outputs = {
             "predicted_crop": crop,
             "soil_condition": soil_condition,
-            "irrigation": irrigation
+            "irrigation": irrigation,
+            "crop_health": asdict(health_report)
         }
 
         try:
@@ -194,6 +219,15 @@ def predict(
             "predicted_crop": crop,
             "soil_condition": soil_condition,
             "irrigation": irrigation,
+            "crop_health": {
+                "score": health_report.health_score,
+                "disease_risk": health_report.disease_risk,
+                "disease_name": health_report.disease_name,
+                "pest_alert": health_report.pest_alert,
+                "pest_name": health_report.pest_name,
+                "nutrient_deficiency": health_report.nutrient_deficiency,
+                "nutrient_tip": health_report.nutrient_tip
+            },
 
             "query_received": query,   # 🔥 DEBUG FIELD
 
@@ -211,3 +245,48 @@ def predict(
             "error": str(e),
             "status": "prediction_failed"
         }
+
+
+# ✅ Crop health snapshot
+@app.get("/crop-health")
+def crop_health(city: str, soil: str, crop: str):
+    weather = get_weather(city=city)
+    report = get_crop_health(
+        crop=crop,
+        soil=soil,
+        temp=weather["temperature"],
+        humidity=weather["humidity"],
+        month=datetime.now().month,
+    )
+    return asdict(report)
+
+
+# ✅ Profit estimator
+@app.get("/profit-estimate")
+def profit_estimate(
+    city: str,
+    soil: str,
+    crop: str = None,
+    area: float = 1.0,
+    market_price: float = None,
+):
+    weather = get_weather(city=city)
+    if not crop:
+        crop = predict_crop(
+            weather["temperature"],
+            weather["humidity"],
+            weather["rainfall"],
+            soil,
+        )
+
+    soil_condition = soil_condition_logic("Auto", weather["rainfall"])
+    irrigation = irrigation_decision(weather["temperature"], weather["rainfall"], soil_condition)
+
+    estimate = estimate_profit(
+        crop=crop,
+        soil=soil,
+        area_acres=area,
+        market_price=market_price,
+        irrigation_needed=(irrigation == "Yes"),
+    )
+    return asdict(estimate)

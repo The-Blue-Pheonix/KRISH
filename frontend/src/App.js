@@ -13,6 +13,8 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import FarmingGuide from './pages/FarmingGuide';
 import FarmMap from './pages/FarmMap';
+import CropInsights from './pages/CropInsights';
+import ProfitEstimator from './pages/ProfitEstimator';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -77,8 +79,8 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="ai" element={<AIAssistant />} />
           <Route path="farm" element={<FarmMap />} />
-          <Route path="crops" element={<PlaceholderPage title="Crop Insights & Health" />} />
-          <Route path="profit" element={<PlaceholderPage title="Profit Estimator Studio" />} />
+          <Route path="crops" element={<CropInsights />} />
+          <Route path="profit" element={<ProfitEstimator />} />
           <Route path="guide" element={<FarmingGuide />} />
           <Route path="settings" element={<PlaceholderPage title="Account Settings" />} />
         </Route>

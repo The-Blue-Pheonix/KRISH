@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { fetchPrediction, getRecommendedSoil } from '../services/api';
 import { useTranslation } from 'react-i18next';
 import { useGeolocation } from '../hooks/useGeolocation';
@@ -31,6 +31,17 @@ export default function Dashboard() {
   const [soilLoading, setSoilLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+
+  const cropHealth = data?.crop_health || null;
+  const healthScore = cropHealth?.score ?? cropHealth?.health_score ?? null;
+  const healthTone = useMemo(() => {
+    if (healthScore === null || healthScore === undefined) {
+      return { color: '#10b981', label: t('dashboard.main_grid.optimal') };
+    }
+    if (healthScore >= 70) return { color: '#10b981', label: 'Strong' };
+    if (healthScore >= 40) return { color: '#f59e0b', label: 'Caution' };
+    return { color: '#ef4444', label: 'At Risk' };
+  }, [healthScore, t]);
 
   // Auto-fetch location from GPS and update city
   useEffect(() => {
@@ -75,6 +86,16 @@ export default function Dashboard() {
         i18n.language
       );
       setData(result);
+      if (result) {
+        localStorage.setItem('farmCity', result.location || city);
+        localStorage.setItem('farmSoil', soil);
+        if (result.predicted_crop) {
+          localStorage.setItem('farmCrop', result.predicted_crop);
+        }
+        if (result.crop_health) {
+          localStorage.setItem('cropHealth', JSON.stringify(result.crop_health));
+        }
+      }
     } catch (err) {
       setError("Connecting to backend failed. To get real AI data, run: uvicorn app.main:app");
       setData({
@@ -83,6 +104,15 @@ export default function Dashboard() {
         predicted_crop: "Rice",
         soil_condition: "Wet",
         irrigation: "No",
+        crop_health: {
+          score: 65,
+          disease_risk: "Moderate",
+          disease_name: "Blast fungus",
+          pest_alert: false,
+          pest_name: "None",
+          nutrient_deficiency: "Zinc",
+          nutrient_tip: "Apply zinc sulfate before sowing"
+        },
         ai_recommendation: "Hold off on watering today since moisture sits high (72%). Ensure the field has appropriate drainage; your rice crop is growing optimally."
       });
     } finally {
@@ -276,6 +306,64 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* 2.5 Crop Insights */}
+      <div className="dashboard-card p-6 border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+          <div className="flex items-center gap-6">
+            <div
+              className="relative w-28 h-28 rounded-full p-2"
+              style={{
+                background: `conic-gradient(${healthTone.color} ${(healthScore ?? 0) * 3.6}deg, #e5e7eb 0deg)`
+              }}
+            >
+              <div className="absolute inset-2 rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center">
+                <span className="text-2xl font-black text-neutral-900 dark:text-white">{healthScore ?? '--'}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Health</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-neutral-900 dark:text-neutral-100">Crop Insights</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">{data?.predicted_crop || 'Crop'} health outlook</p>
+              <span className="inline-flex mt-3 items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700">
+                {healthTone.label}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl border border-neutral-200 dark:border-slate-700 bg-neutral-50 dark:bg-slate-700/30">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Disease Risk</p>
+              <p className="text-lg font-black text-neutral-800 dark:text-neutral-100 mt-2">
+                {cropHealth?.disease_risk || '--'}
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                {cropHealth?.disease_name || 'None detected'}
+              </p>
+            </div>
+            <div className="p-4 rounded-xl border border-neutral-200 dark:border-slate-700 bg-neutral-50 dark:bg-slate-700/30">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Nutrient Gap</p>
+              <p className="text-lg font-black text-neutral-800 dark:text-neutral-100 mt-2">
+                {cropHealth?.nutrient_deficiency || '--'}
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                {cropHealth?.nutrient_tip || 'Run a soil test to confirm.'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className={`mt-5 rounded-xl p-4 border ${cropHealth?.pest_alert ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
+          <p className="text-sm font-bold text-neutral-900">
+            {cropHealth?.pest_alert ? `Pest Alert: ${cropHealth?.pest_name || 'Risk detected'}` : 'No active pest alert'}
+          </p>
+          <p className="text-xs text-neutral-600 mt-1">
+            {cropHealth?.pest_alert
+              ? 'Increase field scouting and prepare preventive control measures.'
+              : 'Maintain weekly checks and keep the field clean.'}
+          </p>
+        </div>
+      </div>
+
       {/* 3. MAIN CONTENT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
         
@@ -299,8 +387,8 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-full md:w-auto">
                 <div className="bg-neutral-50 dark:bg-slate-700/30 p-3 rounded-lg border border-neutral-100 dark:border-slate-600">
                   <p className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t('dashboard.main_grid.crop_health')}</p>
-                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span> {t('dashboard.main_grid.optimal')}
+                  <p className="text-sm font-bold mt-1 flex items-center gap-1.5" style={{ color: healthTone.color }}>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: healthTone.color }}></span> {healthTone.label}
                   </p>
                 </div>
                 <div className="bg-neutral-50 dark:bg-slate-700/30 p-3 rounded-lg border border-neutral-100 dark:border-slate-600">
