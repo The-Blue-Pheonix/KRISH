@@ -1,5 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
+from dataclasses import asdict
+import os
+import tempfile
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from app.routes import farmer, sensor, recommendation
 from app.services.predict import predict_crop
@@ -7,6 +14,8 @@ from app.services.irrigation import irrigation_decision, soil_condition_logic
 from app.services.weather import get_weather
 from app.services.llm import generate_agricultural_insight
 from app.services.soil_mapping import get_soil_by_location
+from app.services.crop_health import get_crop_health
+from app.services.profit import estimate_profit
 
 app = FastAPI(title="Smart Agri System API")
 
@@ -60,6 +69,33 @@ Farmer asks: "{request.message}"
 app.include_router(farmer.router, prefix="/farmer", tags=["Farmer"])
 app.include_router(sensor.router, prefix="/sensor", tags=["Sensor"])
 app.include_router(recommendation.router, prefix="/recommendation", tags=["Recommendation"])
+
+import tempfile
+import shutil
+from app.services.plant_disease import analyze_plant_image
+
+@app.post("/plant-disease")
+async def detect_plant_disease(file: UploadFile = File(...)):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File provided is not an image.")
+    
+    try:
+        # Save uploaded file temporarily for Kindwise API
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
+            shutil.copyfileobj(file.file, temp_file)
+            temp_path = temp_file.name
+            
+        # Analyze using Kindwise
+        analysis_result = analyze_plant_image(temp_path)
+        
+        # Clean up temp file
+        os.remove(temp_path)
+        
+        return {"result": analysis_result}
+    except ValueError as ve:
+        raise HTTPException(status_code=401, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/")
@@ -146,6 +182,17 @@ def predict(
         irrigation = irrigation_decision(temp, rainfall, soil_condition)
 
         # =========================
+        # 4.5️⃣ CROP HEALTH INSIGHTS
+        # =========================
+        health_report = get_crop_health(
+            crop=crop,
+            soil=soil,
+            temp=temp,
+            humidity=humidity,
+            month=datetime.now().month,
+        )
+
+        # =========================
         # 5️⃣ LLM AI RECOMMENDATION
         # =========================
         user_inputs = {
@@ -160,7 +207,8 @@ def predict(
         ml_outputs = {
             "predicted_crop": crop,
             "soil_condition": soil_condition,
-            "irrigation": irrigation
+            "irrigation": irrigation,
+            "crop_health": asdict(health_report)
         }
 
         try:
@@ -194,6 +242,15 @@ def predict(
             "predicted_crop": crop,
             "soil_condition": soil_condition,
             "irrigation": irrigation,
+            "crop_health": {
+                "score": health_report.health_score,
+                "disease_risk": health_report.disease_risk,
+                "disease_name": health_report.disease_name,
+                "pest_alert": health_report.pest_alert,
+                "pest_name": health_report.pest_name,
+                "nutrient_deficiency": health_report.nutrient_deficiency,
+                "nutrient_tip": health_report.nutrient_tip
+            },
 
             "query_received": query,   # 🔥 DEBUG FIELD
 
@@ -211,3 +268,48 @@ def predict(
             "error": str(e),
             "status": "prediction_failed"
         }
+
+
+# ✅ Crop health snapshot
+@app.get("/crop-health")
+def crop_health(city: str, soil: str, crop: str):
+    weather = get_weather(city=city)
+    report = get_crop_health(
+        crop=crop,
+        soil=soil,
+        temp=weather["temperature"],
+        humidity=weather["humidity"],
+        month=datetime.now().month,
+    )
+    return asdict(report)
+
+
+# ✅ Profit estimator
+@app.get("/profit-estimate")
+def profit_estimate(
+    city: str,
+    soil: str,
+    crop: str = None,
+    area: float = 1.0,
+    market_price: float = None,
+):
+    weather = get_weather(city=city)
+    if not crop:
+        crop = predict_crop(
+            weather["temperature"],
+            weather["humidity"],
+            weather["rainfall"],
+            soil,
+        )
+
+    soil_condition = soil_condition_logic("Auto", weather["rainfall"])
+    irrigation = irrigation_decision(weather["temperature"], weather["rainfall"], soil_condition)
+
+    estimate = estimate_profit(
+        crop=crop,
+        soil=soil,
+        area_acres=area,
+        market_price=market_price,
+        irrigation_needed=(irrigation == "Yes"),
+    )
+    return asdict(estimate)

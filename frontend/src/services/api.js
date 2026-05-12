@@ -69,3 +69,44 @@ export const chatWithAI = async (message, city, soil, language = "en") => {
     throw error;
   }
 };
+
+export const fetchProfitEstimate = async (
+  city,
+  soil,
+  crop = null,
+  area = 1.0,
+  marketPrice = null
+) => {
+  try {
+    let url = `http://localhost:8000/profit-estimate?`;
+    const params = new URLSearchParams();
+
+    if (city) {
+      params.append('city', city);
+    }
+    if (soil) {
+      params.append('soil', soil);
+    }
+    if (crop) {
+      params.append('crop', crop);
+    }
+    if (area !== null && area !== undefined) {
+      params.append('area', area);
+    }
+    if (marketPrice !== null && marketPrice !== undefined && marketPrice !== '') {
+      params.append('market_price', marketPrice);
+    }
+
+    url += params.toString();
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('❌ Error fetching profit estimate:', error);
+    throw error;
+  }
+};

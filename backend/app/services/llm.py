@@ -229,6 +229,23 @@ def generate_agricultural_insight(user_input: dict, ml_output: dict) -> str:
         lang_config = LANGUAGE_CONFIG[user_language]
         user_question = user_input.get('query')
         
+        crop_health = ml_output.get("crop_health") or {}
+        crop_health_block = ""
+        if crop_health:
+            pest_text = (
+                f"YES - {crop_health.get('pest_name', 'Unknown')}"
+                if crop_health.get("pest_alert")
+                else "No current threat"
+            )
+            crop_health_block = f"""
+
+Crop Health Analysis:
+- Disease risk: {crop_health.get('disease_risk', 'Unknown')} ({crop_health.get('disease_name', 'Unknown')})
+- Pest alert: {pest_text}
+- Soil nutrient gap: {crop_health.get('nutrient_deficiency', 'Unknown')} - {crop_health.get('nutrient_tip', 'Unknown')}
+- Overall health score: {crop_health.get('health_score', crop_health.get('score', 'Unknown'))}/100
+"""
+
         prompt = f"""
 You are an expert Agricultural AI Assistant for farmers in {lang_config['location_label']}.
 
@@ -250,6 +267,7 @@ Weather Condition: {user_input.get('weather_condition', 'Unknown')}
 Soil Type: {user_input.get('soil', 'Unknown')}
 Recommended Crop: {ml_output.get('predicted_crop', 'Unknown')}
 Irrigation Needed: {ml_output.get('irrigation', 'Unknown')}
+{crop_health_block}
 
 ❓ Farmer's Question:
 {user_question if user_question else lang_config['no_question']}
