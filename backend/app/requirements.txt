@@ -6,6 +6,5 @@ joblib==1.4.2
 setuptools
 numpy>=1.26.0
 scikit-learn
-
-google-generativeai
+groq
 python-dotenv

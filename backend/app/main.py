@@ -39,7 +39,7 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat_with_ai(request: ChatRequest):
     try:
-        from services.llm import cached_llm_call, LANGUAGE_CONFIG
+        from app.services.llm import cached_llm_call, LANGUAGE_CONFIG
         
         # Validate and get language config
         user_language = request.language.lower() if request.language else "en"
