@@ -759,3 +759,6 @@ The system balances **computational efficiency** (ML for fast predictions) with 
 **Version:** 1.0  
 **Last Updated:** May 10, 2026  
 **Maintained By:** KRISHI Development Team
+
+
+to read and study
