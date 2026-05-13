@@ -5,49 +5,29 @@ import {
   ChevronDown, ChevronUp, ExternalLink, Search, Headphones, FileText, Sprout
 } from 'lucide-react';
 
-const FAQ_DATA = [
-  {
-    q: 'How does Krishi AI recommend crops?',
-    a: 'Krishi AI analyzes your location\'s real-time weather data, soil type, historical rainfall patterns, and market prices to recommend the most profitable and sustainable crop for your specific farm conditions.'
-  },
-  {
-    q: 'Is the weather data accurate?',
-    a: 'Yes. We pull hyper-local weather data from OpenWeatherMap and IMD (India Meteorological Department) APIs. The data is updated every 30 minutes and includes a 7-day forecast.'
-  },
-  {
-    q: 'How do I change my farm location?',
-    a: 'Go to the Dashboard and use the location input in the top banner. You can either enable GPS for automatic detection or manually type your city name. The soil type will auto-detect based on your region.'
-  },
-  {
-    q: 'Can I use Krishi in my local language?',
-    a: 'Absolutely! Krishi supports Hindi, Bengali, Marathi, and Tamil in addition to English. Click the globe icon (🌐) in the top navbar to switch languages. All dashboard text, recommendations, and guides will update instantly.'
-  },
-  {
-    q: 'Is my data private and secure?',
-    a: 'Yes. We use Supabase with enterprise-grade security, row-level security policies, and encrypted storage. Your personal information and farm data are never shared with third parties.'
-  },
-  {
-    q: 'How accurate is the profit estimator?',
-    a: 'The profit estimator uses current mandi prices, average yield data for your region, and input cost estimates. While actual results may vary based on many factors, our estimates are typically within 15-20% accuracy.'
-  },
-  {
-    q: 'What should I do if the AI recommendation seems wrong?',
-    a: 'Double-check that your city and soil type are correctly set in the dashboard. If the issue persists, the AI adapts over time — you can also consult the Farming Guide for manual verification of recommendations.'
-  },
-  {
-    q: 'How do I report a bug or request a feature?',
-    a: 'Use the contact form below, email us at support@krishi.app, or reach out via the community Discord channel. We respond within 24 hours during weekdays.'
-  },
-];
+import faqsEn from '../data/faqs_en.json';
+import faqsHi from '../data/faqs_hi.json';
+import faqsBn from '../data/faqs_bn.json';
+import faqsMr from '../data/faqs_mr.json';
+import faqsTa from '../data/faqs_ta.json';
+
+const faqLocales = {
+  en: faqsEn,
+  hi: faqsHi,
+  bn: faqsBn,
+  mr: faqsMr,
+  ta: faqsTa
+};
 
 export default function HelpSupport() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const filteredFaqs = FAQ_DATA.filter(faq =>
+  const faqs = faqLocales[i18n.language?.split('-')[0]] || faqsEn;
+  const filteredFaqs = faqs.filter(faq =>
     faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
     faq.a.toLowerCase().includes(searchQuery.toLowerCase())
   );

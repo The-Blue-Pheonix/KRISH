@@ -191,5 +191,18 @@
       "message": "Message",
       "send": "Send Message"
     }
+  },
+  "guide": {
+    "search_placeholder": "Search everything…",
+    "no_results": "No results found",
+    "wiki_title": "KrishiGyan — Farmer's Wikipedia",
+    "wiki_subtitle": "Everything a farmer needs to know — simple, clear, no jargon. In one place.",
+    "articles": "articles",
+    "more": "more",
+    "footer_disclaimer": "Based on ICAR, state agriculture department guidelines, and field practices across India.",
+    "back": "Back",
+    "more_in": "More in",
+    "related_topics": "Related Topics",
+    "did_you_know": "Did you know?"
   }
 }

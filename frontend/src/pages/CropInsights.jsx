@@ -4,12 +4,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const getScoreTone = (score) => {
   if (score >= 70) {
-    return { label: 'Strong', color: '#16a34a', bg: 'bg-emerald-50', text: 'text-emerald-700' };
+    return { label: 'Strong', color: '#16a34a', bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400' };
   }
   if (score >= 40) {
-    return { label: 'Caution', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700' };
+    return { label: 'Caution', color: '#f59e0b', bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-400' };
   }
-  return { label: 'At Risk', color: '#ef4444', bg: 'bg-red-50', text: 'text-red-700' };
+  return { label: 'At Risk', color: '#ef4444', bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-400' };
 };
 
 export default function CropInsights() {
@@ -174,8 +174,8 @@ export default function CropInsights() {
         <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
           <Sprout size={22} />
         </div>
-        <h2 className="text-xl font-bold text-neutral-800 mb-2">Crop Insights</h2>
-        <p className="text-sm text-neutral-500">
+        <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-2">Crop Insights</h2>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Run a prediction on the dashboard to unlock live crop health insights.
         </p>
       </div>
@@ -203,9 +203,9 @@ export default function CropInsights() {
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div className={`rounded-xl border p-4 ${tone.bg} border-transparent`}>
-            <p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Disease Risk</p>
-            <p className="text-lg font-black text-neutral-800 mt-2">{health.disease_risk}</p>
-            <p className="text-sm text-neutral-600 mt-1">{health.disease_name}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Disease Risk</p>
+            <p className="text-lg font-black text-neutral-800 dark:text-neutral-100 mt-2">{health.disease_risk}</p>
+            <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">{health.disease_name}</p>
           </div>
           <div className="rounded-xl border border-neutral-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-800">
             <p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Soil Nutrient Gap</p>
@@ -215,17 +215,17 @@ export default function CropInsights() {
         </div>
       </div>
 
-      <div className={`dashboard-card p-5 flex items-center gap-3 ${health.pest_alert ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
+      <div className={`dashboard-card p-5 flex items-center gap-3 ${health.pest_alert ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30' : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/30'}`}>
         {health.pest_alert ? (
-          <ShieldAlert className="text-red-500" size={22} />
+          <ShieldAlert className="text-red-500 dark:text-red-400" size={22} />
         ) : (
-          <AlertTriangle className="text-emerald-600" size={22} />
+          <AlertTriangle className="text-emerald-600 dark:text-emerald-400" size={22} />
         )}
         <div>
-          <p className="text-sm font-bold text-neutral-900">
+          <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
             {health.pest_alert ? 'Pest Alert Active' : 'No Pest Alert'}
           </p>
-          <p className="text-xs text-neutral-600">
+          <p className="text-xs text-neutral-600 dark:text-neutral-400">
             {health.pest_alert
               ? `Monitor for ${health.pest_name} and apply preventive controls.`
               : 'Current pest pressure is low. Keep standard monitoring.'}
@@ -235,13 +235,13 @@ export default function CropInsights() {
 
       {/* --- Plant Disease Detector --- */}
       <div className="dashboard-card p-6 mt-8">
-        <h3 className="text-xl font-bold text-neutral-800 mb-4">AI Plant Disease Detector</h3>
-        <p className="text-sm text-neutral-500 mb-6">Upload a photo of your crop to identify diseases and get organic remedies.</p>
+        <h3 className="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">AI Plant Disease Detector</h3>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">Upload a photo of your crop to identify diseases and get organic remedies.</p>
         
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/3">
             <div 
-              className="border-2 border-dashed border-neutral-300 rounded-xl bg-neutral-50 hover:bg-neutral-100 transition-colors p-6 text-center cursor-pointer flex flex-col items-center justify-center min-h-[200px]"
+              className="border-2 border-dashed border-neutral-300 dark:border-slate-600 rounded-xl bg-neutral-50 dark:bg-slate-800/50 hover:bg-neutral-100 dark:hover:bg-slate-800 transition-colors p-6 text-center cursor-pointer flex flex-col items-center justify-center min-h-[200px]"
               onClick={() => fileInputRef.current?.click()}
             >
               {imagePreview ? (
@@ -249,8 +249,8 @@ export default function CropInsights() {
               ) : (
                 <>
                   <UploadCloud className="text-emerald-500 mb-3" size={32} />
-                  <p className="text-sm font-medium text-neutral-700">Click to upload image</p>
-                  <p className="text-xs text-neutral-500 mt-1">JPG, PNG up to 5MB</p>
+                  <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Click to upload image</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">JPG, PNG up to 5MB</p>
                 </>
               )}
               <input 
@@ -274,20 +274,20 @@ export default function CropInsights() {
 
           <div className="w-full md:w-2/3">
             {!diseaseResult ? (
-              <div className="h-full min-h-[200px] border border-neutral-100 bg-neutral-50/50 rounded-xl flex items-center justify-center p-6 text-center text-neutral-400">
+              <div className="h-full min-h-[200px] border border-neutral-100 dark:border-slate-700 bg-neutral-50/50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center p-6 text-center text-neutral-400 dark:text-neutral-500">
                 <p className="text-sm">Gemini AI Assistant results will appear here</p>
               </div>
             ) : diseaseResult.error ? (
-              <div className="h-full border border-red-100 bg-red-50 rounded-xl flex items-center justify-center p-6 text-center text-red-500">
+              <div className="h-full border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 rounded-xl flex items-center justify-center p-6 text-center text-red-500 dark:text-red-400">
                 <p className="text-sm font-medium">Error: {diseaseResult.error}</p>
               </div>
             ) : (
-              <div className="border border-neutral-200 rounded-xl p-6 bg-white max-h-[400px] overflow-y-auto">
-                <h4 className="font-bold text-neutral-800 flex items-center gap-2 mb-3">
+              <div className="border border-neutral-200 dark:border-slate-700 rounded-xl p-6 bg-white dark:bg-slate-800 max-h-[400px] overflow-y-auto">
+                <h4 className="font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2 mb-3">
                   <Sprout className="text-emerald-500" size={18} />
                   Gemini AI Analysis
                 </h4>
-                <div className="text-sm text-neutral-700 whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none">
+                <div className="text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap leading-relaxed prose prose-sm dark:prose-invert max-w-none">
                   {diseaseResult.text}
                 </div>
               </div>
