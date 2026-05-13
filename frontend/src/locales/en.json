@@ -102,5 +102,94 @@
   "layout": {
     "search_placeholder": "Search resources...",
     "verified_account": "Verified Account"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and application settings.",
+    "save": "Save Changes",
+    "saved": "Saved!",
+    "tabs": {
+      "profile": "Profile",
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "privacy": "Privacy & Security"
+    },
+    "profile": {
+      "avatar_title": "Profile Photo",
+      "avatar_hint": "JPG, PNG or GIF. Max 2MB.",
+      "info_title": "Personal Information",
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "region": "Farm Region"
+    },
+    "appearance": {
+      "theme_title": "Theme",
+      "theme_desc": "Choose how Krishi looks to you.",
+      "light": "Light",
+      "dark": "Dark",
+      "lang_title": "Language",
+      "lang_desc": "Select your preferred language for the interface."
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "desc": "Choose what updates you want to receive.",
+      "weather": "Weather Alerts",
+      "weather_desc": "Get notified about severe weather, rain forecasts, and temperature changes.",
+      "crop": "Crop Recommendations",
+      "crop_desc": "Receive sowing, irrigation, and fertilizer reminders based on AI analysis.",
+      "market": "Market Prices",
+      "market_desc": "Daily updates on mandi prices for your crops.",
+      "newsletter": "Newsletter",
+      "newsletter_desc": "Weekly farming tips and government scheme updates."
+    },
+    "privacy": {
+      "password_title": "Change Password",
+      "password_desc": "Update your password to keep your account secure.",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "update_password": "Update Password",
+      "danger_title": "Danger Zone",
+      "danger_desc": "Once you delete your account, there is no going back. Please be certain.",
+      "delete_account": "Delete Account"
+    }
+  },
+  "help": {
+    "title": "How can we help you?",
+    "subtitle": "Find answers, guides, and contact our support team.",
+    "search_placeholder": "Search FAQs...",
+    "faq_title": "Frequently Asked Questions",
+    "no_results": "No matching questions found. Try a different search term.",
+    "contact_title": "Contact Support",
+    "submitted_title": "Message Sent!",
+    "submitted_desc": "We'll get back to you within 24 hours.",
+    "info_title": "Get in Touch",
+    "hours_title": "Support Hours",
+    "hours_note": "AI assistant available 24/7",
+    "quick": {
+      "guide": "Farming Guide",
+      "guide_desc": "Soil, crops, pests & more",
+      "ai": "Ask Krishi AI",
+      "ai_desc": "Get instant AI advice",
+      "docs": "Documentation",
+      "docs_desc": "API & technical docs"
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "form": {
+      "name": "Your Name",
+      "email": "Email",
+      "subject": "Subject",
+      "select_topic": "Select a topic...",
+      "bug": "Bug Report",
+      "feature": "Feature Request",
+      "account": "Account Issue",
+      "other": "Other",
+      "message": "Message",
+      "send": "Send Message"
+    }
   }
 }
