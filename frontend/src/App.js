@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import PlaceholderPage from './pages/PlaceholderPage';
 import AIAssistant from './pages/AIAssistant';
 import ProtectedRoute from './components/ProtectedRoute';
 import { supabase } from './services/supabaseClient';
@@ -15,6 +14,8 @@ import FarmingGuide from './pages/FarmingGuide';
 import FarmMap from './pages/FarmMap';
 import CropInsights from './pages/CropInsights';
 import ProfitEstimator from './pages/ProfitEstimator';
+import Settings from './pages/Settings';
+import HelpSupport from './pages/HelpSupport';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -82,7 +83,8 @@ function App() {
           <Route path="crops" element={<CropInsights />} />
           <Route path="profit" element={<ProfitEstimator />} />
           <Route path="guide" element={<FarmingGuide />} />
-          <Route path="settings" element={<PlaceholderPage title="Account Settings" />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="help" element={<HelpSupport />} />
         </Route>
       </Routes>
     </BrowserRouter>

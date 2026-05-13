@@ -80,22 +80,6 @@ export default function Home() {
             </motion.button>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="inline-flex items-center bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-sm mb-16 mx-auto border border-white/60"
-          >
-            <div className="flex text-amber-500 mr-3">
-              <Star className="w-5 h-5 fill-current" />
-              <Star className="w-5 h-5 fill-current" />
-              <Star className="w-5 h-5 fill-current" />
-              <Star className="w-5 h-5 fill-current" />
-              <Star className="w-5 h-5 fill-current" />
-            </div>
-            <span className="font-bold text-[#1b3d2f] mr-1">5.0</span>
-            <span className="text-[#1b3d2f]/80 text-sm font-medium">from 80+ reviews</span>
-          </motion.div>
         </div>
 
         {/* Floating Icons Background logic (Absolute positioning) within Hero */}

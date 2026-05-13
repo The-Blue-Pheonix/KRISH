@@ -8,3 +8,4 @@ numpy>=1.26.0
 scikit-learn
 groq
 python-dotenv
+
