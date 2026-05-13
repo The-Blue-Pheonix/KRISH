@@ -70,6 +70,23 @@ export const chatWithAI = async (message, city, soil, language = "en") => {
   }
 };
 
+export const voiceChat = async (text, city, soil, language = "en") => {
+  try {
+    const response = await fetch(`http://localhost:8000/voice-chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, city, soil, language })
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error with voice chat:", error);
+    throw error;
+  }
+};
+
 export const fetchProfitEstimate = async (
   city,
   soil,
