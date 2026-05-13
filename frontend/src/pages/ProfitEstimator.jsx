@@ -52,31 +52,31 @@ export default function ProfitEstimator() {
     <div className="space-y-6">
       <div className="dashboard-card p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
             <DollarSign size={18} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-neutral-800">Profit Estimator Studio</h2>
-            <p className="text-sm text-neutral-500">Fast deterministic estimates using MSP prices.</p>
+            <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-100">Profit Estimator Studio</h2>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Fast deterministic estimates using MSP prices.</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">City</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">City</label>
             <input
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full mt-2 p-2.5 bg-neutral-50 border border-neutral-200 rounded-lg font-medium"
+              className="w-full mt-2 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-medium"
             />
           </div>
           <div>
-            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Soil Type</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Soil Type</label>
             <select
               value={soil}
               onChange={(e) => setSoil(e.target.value)}
-              className="w-full mt-2 p-2.5 bg-neutral-50 border border-neutral-200 rounded-lg font-medium"
+              className="w-full mt-2 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-medium"
             >
               <option value="Alluvial">Alluvial</option>
               <option value="Laterite">Laterite</option>
@@ -85,11 +85,11 @@ export default function ProfitEstimator() {
             </select>
           </div>
           <div>
-            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Crop</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Crop</label>
             <select
               value={crop}
               onChange={(e) => setCrop(e.target.value)}
-              className="w-full mt-2 p-2.5 bg-neutral-50 border border-neutral-200 rounded-lg font-medium"
+              className="w-full mt-2 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-medium"
             >
               <option value="Rice">Rice</option>
               <option value="Wheat">Wheat</option>
@@ -98,25 +98,25 @@ export default function ProfitEstimator() {
             </select>
           </div>
           <div>
-            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Land Area (Acres)</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Land Area (Acres)</label>
             <input
               type="number"
               min="0.1"
               step="0.1"
               value={area}
               onChange={(e) => setArea(Number(e.target.value))}
-              className="w-full mt-2 p-2.5 bg-neutral-50 border border-neutral-200 rounded-lg font-medium"
+              className="w-full mt-2 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-medium"
             />
           </div>
           <div>
-            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Local Market Price (Optional)</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Local Market Price (Optional)</label>
             <input
               type="number"
               min="0"
               step="1"
               value={marketPrice}
               onChange={(e) => setMarketPrice(e.target.value)}
-              className="w-full mt-2 p-2.5 bg-neutral-50 border border-neutral-200 rounded-lg font-medium"
+              className="w-full mt-2 p-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-medium"
               placeholder="Overrides MSP"
             />
           </div>
@@ -132,7 +132,7 @@ export default function ProfitEstimator() {
         </form>
 
         {error && (
-          <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg">
+          <div className="mt-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 rounded-lg">
             {error}
           </div>
         )}
@@ -141,49 +141,49 @@ export default function ProfitEstimator() {
       {estimate && (
         <div className="dashboard-card p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Gross Revenue</p>
-              <p className="text-2xl font-black text-emerald-900 mt-2">{formatCurrency(estimate.gross_revenue)}</p>
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Gross Revenue</p>
+              <p className="text-2xl font-black text-emerald-900 dark:text-emerald-100 mt-2">{formatCurrency(estimate.gross_revenue)}</p>
             </div>
-            <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-amber-600">Total Cost</p>
-              <p className="text-2xl font-black text-amber-900 mt-2">{formatCurrency(estimate.total_cost)}</p>
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">Total Cost</p>
+              <p className="text-2xl font-black text-amber-900 dark:text-amber-100 mt-2">{formatCurrency(estimate.total_cost)}</p>
             </div>
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Net Profit</p>
-              <p className="text-2xl font-black text-blue-900 mt-2">{formatCurrency(estimate.net_profit)}</p>
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Net Profit</p>
+              <p className="text-2xl font-black text-blue-900 dark:text-blue-100 mt-2">{formatCurrency(estimate.net_profit)}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Expected Yield</p>
-              <p className="text-lg font-black text-neutral-800 mt-2">{estimate.expected_yield_quintals} qtl</p>
+            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Expected Yield</p>
+              <p className="text-lg font-black text-neutral-800 dark:text-neutral-100 mt-2">{estimate.expected_yield_quintals} qtl</p>
             </div>
-            <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500">ROI</p>
-              <p className="text-lg font-black text-neutral-800 mt-2">{estimate.roi_percent}%</p>
+            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">ROI</p>
+              <p className="text-lg font-black text-neutral-800 dark:text-neutral-100 mt-2">{estimate.roi_percent}%</p>
             </div>
-            <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
-              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Breakeven Yield</p>
-              <p className="text-lg font-black text-neutral-800 mt-2">{estimate.breakeven_yield} qtl</p>
+            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-xl">
+              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Breakeven Yield</p>
+              <p className="text-lg font-black text-neutral-800 dark:text-neutral-100 mt-2">{estimate.breakeven_yield} qtl</p>
             </div>
           </div>
 
-          <div className="border border-neutral-200 rounded-xl overflow-hidden">
-            <div className="bg-neutral-100 px-4 py-2 text-xs font-bold uppercase tracking-widest text-neutral-500">
+          <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden">
+            <div className="bg-neutral-100 dark:bg-neutral-800 px-4 py-2 text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
               Cost Breakdown
             </div>
-            <div className="divide-y divide-neutral-200">
+            <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {breakdown ? (
                 ["seed", "fertilizer", "pesticide", "labor", "irrigation"].map((key) => (
                   <div key={key} className="flex items-center justify-between px-4 py-3 text-sm">
-                    <span className="capitalize text-neutral-600">{key}</span>
-                    <span className="font-bold text-neutral-800">{formatCurrency(breakdown[key])}</span>
+                    <span className="capitalize text-neutral-600 dark:text-neutral-300">{key}</span>
+                    <span className="font-bold text-neutral-800 dark:text-neutral-100">{formatCurrency(breakdown[key])}</span>
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-3 text-sm text-neutral-500">Cost breakdown unavailable.</div>
+                <div className="px-4 py-3 text-sm text-neutral-500 dark:text-neutral-400">Cost breakdown unavailable.</div>
               )}
             </div>
           </div>
