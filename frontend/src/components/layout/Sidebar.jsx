@@ -48,6 +48,8 @@ export default function Sidebar({ isOpen, closeSidebar, onLogout }) {
             onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
+                link.path === '/dashboard/farm' ? 'hidden md:flex' : 'flex'
+              } ${
                 isActive 
                   ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-l-4 border-emerald-600 dark:border-emerald-500' 
                   : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-slate-700 hover:text-neutral-900 dark:hover:text-neutral-100 border-l-4 border-transparent'
