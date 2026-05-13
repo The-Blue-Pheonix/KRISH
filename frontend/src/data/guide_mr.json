@@ -1,0 +1,1623 @@
+[
+  {
+    "id": "soils",
+    "emoji": "🌍",
+    "title": "मातीचे प्रकार",
+    "color": "#3B6D11",
+    "bg": "#EAF3DE",
+    "articles": [
+      {
+        "id": "alluvial",
+        "title": "गाळाची माती (जलोढ़ मिट्टी)",
+        "tags": [
+          "North India",
+          "Most Fertile",
+          "River Plains"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "The most fertile and most widely found माती in India. Formed by rivers depositing silt over thousands of years. Found along Ganga, Yamuna, Brahmaputra and other river plains."
+          },
+          {
+            "type": "h3",
+            "text": "Where is it found?"
+          },
+          {
+            "type": "text",
+            "text": "Punjab, Haryana, UP, Bihar, West Bengal, Assam river plains. Also coastal areas of Odisha, Tamil Nadu, Kerala."
+          },
+          {
+            "type": "h3",
+            "text": "What makes it good?"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Rich in potash, phosphoric acid and lime",
+              "Light and easy to plow",
+              "High पाणी-holding capacity",
+              "Well-drained — no पाणीlogging",
+              "pH: 6.5–7.5 (near neutral — good for most पीकs)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Best पीकs to Grow"
+          },
+          {
+            "type": "cropbox",
+            "items": [
+              "✅ Wheat",
+              "✅ Rice",
+              "✅ Sugarcane",
+              "✅ Maize",
+              "✅ Oilseeds",
+              "✅ Pulses",
+              "✅ Vegetables"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Plow 3–4 times before sowing for fine seedbed",
+              "Add organic manure (compost/FYM) regularly — गाळाची loses organic matter fast",
+              "Follow पीक rotation to maintain fertility",
+              "Apply nitrogen fertilizer in split doses"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't leave the field without पीक — topमाती erodes fast",
+              "Don't over-irrigate — पाणीlogging is the biggest risk",
+              "Don't skip potash fertilizer — this माती often lacks K"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "गाळाची माती covers about 43% of India's total land area and feeds over 60% of the country's population."
+          }
+        ]
+      },
+      {
+        "id": "black",
+        "title": "Black माती (काली मिट्टी / Regur)",
+        "tags": [
+          "Deccan Plateau",
+          "Cotton माती",
+          "Self-plowing"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Also called 'Regur' or 'cotton माती'. Formed from volcanic lava rocks millions of years ago. Dark black color because of iron, magnesium, and organic matter."
+          },
+          {
+            "type": "h3",
+            "text": "Where is it found?"
+          },
+          {
+            "type": "text",
+            "text": "Maharashtra, Madhya Pradesh, Gujarat, Andhra Pradesh, Karnataka, Telangana — the Deccan Plateau region."
+          },
+          {
+            "type": "h3",
+            "text": "Special Property: Self-plowing"
+          },
+          {
+            "type": "text",
+            "text": "Black माती swells when wet and cracks when dry. These cracks aerate the माती from inside — nature's own plowing. You'll see 5–15 cm wide cracks in summer."
+          },
+          {
+            "type": "h3",
+            "text": "What makes it good?"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Excellent पाणी-holding capacity — holds moisture for long",
+              "Rich in calcium, magnesium, potash and lime",
+              "High clay content — sticky when wet",
+              "pH: 7.5–8.5 (slightly alkaline)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Best पीकs to Grow"
+          },
+          {
+            "type": "cropbox",
+            "items": [
+              "✅ Cotton (best!)",
+              "✅ Soybean",
+              "✅ Sorghum (Jowar)",
+              "✅ Wheat",
+              "✅ Sunflower",
+              "✅ Citrus fruits"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Plow before rains — माती is very hard when dry",
+              "Mix organic matter regularly — this माती lacks nitrogen and phosphorus",
+              "Use raised beds for पाणीlogging-prone areas",
+              "Add zinc and sulfur — black माती is often deficient in micronutrients"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't try to plow when माती is wet — extremely sticky, damages tools",
+              "Don't पाणीlog — drainage is poor, roots will rot",
+              "Don't skip interपीकping — single पीक depletes nitrogen fast"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Black माती is so rich in calcium that lime application is rarely needed. The माती itself acts as a buffer."
+          }
+        ]
+      },
+      {
+        "id": "red",
+        "title": "Red माती (लाल मिट्टी)",
+        "tags": [
+          "South India",
+          "Iron Rich",
+          "Porous"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Red color comes from iron oxide (rust). Formed from हवामानing of old crystalline rocks. Porous and well-drained but loses पाणी fast."
+          },
+          {
+            "type": "h3",
+            "text": "Where is it found?"
+          },
+          {
+            "type": "text",
+            "text": "Tamil Nadu, Andhra Pradesh, Odisha, Jharkhand, Chhattisgarh, parts of Karnataka and Maharashtra."
+          },
+          {
+            "type": "h3",
+            "text": "What makes it different?"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Low nitrogen, phosphorus and humus — needs fertilizer",
+              "Rich in iron and potassium",
+              "Sandy texture — पाणी drains fast",
+              "Responds very well to manure and fertilizers",
+              "pH: 5.5–7 (slightly acidic)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Best पीकs to Grow"
+          },
+          {
+            "type": "cropbox",
+            "items": [
+              "✅ Groundnut",
+              "✅ Millets (Bajra, Ragi)",
+              "✅ Pulses",
+              "✅ Potato",
+              "✅ Fruits (mango, banana)",
+              "✅ Tobacco"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Add heavy doses of FYM and compost before sowing",
+              "Apply lime if माती is acidic (below pH 6)",
+              "Irrigate frequently but in small amounts",
+              "Mulching is very beneficial — prevents moisture loss"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't rely only on chemical fertilizer — manure is essential",
+              "Don't leave माती bare — apply mulch or grow cover पीकs",
+              "Don't grow heavy पाणी पीकs like paddy without पाणी availability"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Red माती turns yellow when it is found in lower areas or पाणीlogged zones, because iron is in a different chemical state there."
+          }
+        ]
+      },
+      {
+        "id": "laterite",
+        "title": "Laterite माती (लेटेराइट मिट्टी)",
+        "tags": [
+          "Heavy Rainfall",
+          "Acidic",
+          "Leached"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Formed in heavy-rainfall tropical areas where nutrients are washed deep into the ground by rain (leaching). Hard like brick when dry (the word 'later' means brick in Latin)."
+          },
+          {
+            "type": "h3",
+            "text": "Where is it found?"
+          },
+          {
+            "type": "text",
+            "text": "Kerala, Karnataka, parts of Assam, Odisha, Meghalaya. Western Ghats and Eastern Ghats highland areas."
+          },
+          {
+            "type": "h3",
+            "text": "Properties"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Very acidic — pH 4.5 to 6",
+              "Poor in nitrogen, phosphorus, calcium, magnesium",
+              "Rich in iron and aluminium (reason for red-brown color)",
+              "Hardens in dry हवामान — difficult to plow"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Best पीकs to Grow"
+          },
+          {
+            "type": "cropbox",
+            "items": [
+              "✅ Tea",
+              "✅ Coffee",
+              "✅ Cashew",
+              "✅ Coconut",
+              "✅ Rubber",
+              "✅ Tapioca"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Apply heavy lime before any पीक — acidity must be corrected first",
+              "Add large amounts of compost and green manure",
+              "Plow immediately after rains when माती is soft",
+              "Mulching is essential to prevent moisture loss"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't grow wheat or rice without major माती treatment first",
+              "Don't delay lime application — acidic माती kills most पीकs",
+              "Don't leave माती bare — will harden into brick-like surface"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Tea and coffee thrive in laterite because they naturally love acidic माती. This is the main reason these पीकs are grown in the Western Ghats."
+          }
+        ]
+      },
+      {
+        "id": "sandy",
+        "title": "Sandy / Desert माती (रेतीली मिट्टी)",
+        "tags": [
+          "Rajasthan",
+          "Low Fertility",
+          "Fast Draining"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Large sand particles with almost no clay or organic matter. पाणी passes through immediately. Very hot in summer, cold in winter."
+          },
+          {
+            "type": "h3",
+            "text": "Where is it found?"
+          },
+          {
+            "type": "text",
+            "text": "Rajasthan, parts of Gujarat, Punjab and Haryana near Thar Desert."
+          },
+          {
+            "type": "h3",
+            "text": "Properties"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Extremely low पाणी retention",
+              "Low in all nutrients — nitrogen, phosphorus, potassium",
+              "High in salt in some areas",
+              "pH: 7 to 8.5 (alkaline)",
+              "Very high temperature variation — hot days, cold nights"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Best पीकs to Grow"
+          },
+          {
+            "type": "cropbox",
+            "items": [
+              "✅ Bajra (Pearl Millet)",
+              "✅ Moth Bean",
+              "✅ Guar (Cluster Bean)",
+              "✅ Sesame",
+              "✅ Date Palm",
+              "✅ Pomegranate"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Add organic matter every season — compost, FYM, green manure",
+              "Drip irrigation is best — reduces पाणी waste by 60%",
+              "Windbreaks (tree rows) reduce wind erosion significantly",
+              "Apply gypsum if salt is high"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't grow paddy, sugarcane — needs far too much पाणी",
+              "Don't over-irrigate — causes salt buildup (salinization)",
+              "Don't plow too deep — brings up infertile subमाती"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Sandy माती, despite being very poor for farming, is ideal for growing drought-tolerant पीकs like Bajra which can produce good yields with just 200–350mm of rain."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nutrients",
+    "emoji": "🧪",
+    "title": "माती Nutrients & Fertilizers",
+    "color": "#185FA5",
+    "bg": "#E6F1FB",
+    "articles": [
+      {
+        "id": "npk",
+        "title": "NPK — The Big Three Nutrients",
+        "tags": [
+          "Primary Nutrients",
+          "Essential",
+          "Fertilizer Basics"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Plants need 17 nutrients total. Nitrogen (N), Phosphorus (P), and Potassium (K) are needed in the largest amounts. Called 'primary macronutrients'."
+          },
+          {
+            "type": "h3",
+            "text": "Nitrogen (N) — The Leaf Maker"
+          },
+          {
+            "type": "text",
+            "text": "Makes leaves dark green and plants grow fast. Part of chlorophyll — what gives leaves their green color. Gets used up fastest in माती."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency signs: Yellowing of older/lower leaves first. Plant looks pale. Slow growth.",
+              "Sources: Urea (46% N), CAN, Ammonium sulfate, cow dung, compost, green manure",
+              "Memory trick: N = Neem patta (green leaf)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Phosphorus (P) — The Root Builder"
+          },
+          {
+            "type": "text",
+            "text": "Essential for root development, flower formation and fruit ripening. Helps in energy transfer inside plant cells."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency signs: Purple or red-brown color on underside of leaves. Weak roots. Delayed maturity.",
+              "Sources: DAP (18% N + 46% P), SSP (16% P), bone meal, rock phosphate",
+              "Memory trick: P = Phool-Phal (flowers and fruits)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Potassium (K) — The Defense Minister"
+          },
+          {
+            "type": "text",
+            "text": "Makes plants strong and disease-resistant. Helps regulate पाणी use. Improves quality of fruits, vegetables and grains."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency signs: Brown, scorched edges on older leaves. Weak stems. Poor grain quality.",
+              "Sources: MOP (60% K), SOP (50% K), wood ash, banana peels, compost",
+              "Memory trick: K = Kaath (strong wood)"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Always apply phosphorus and potassium at sowing time. Apply nitrogen in splits — half at sowing, rest after 30 days. This way plants get nutrients when they need them most."
+          }
+        ]
+      },
+      {
+        "id": "micronutrients",
+        "title": "Micronutrients — Small but Critical",
+        "tags": [
+          "Secondary Nutrients",
+          "Zinc",
+          "Boron"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Needed in tiny amounts but deficiency causes serious पीक loss. Zinc is the most common deficiency in Indian मातीs."
+          },
+          {
+            "type": "h3",
+            "text": "Zinc (Zn) — Most Common Deficiency"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency: White or light green color between leaf veins on young leaves. Called 'khaira disease' in rice.",
+              "Fix: Zinc sulfate (ZnSO4) — 25 kg/acre as माती application, or 0.5% foliar spray",
+              "Prevention: Apply 10 kg zinc sulfate every 3 years"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Iron (Fe)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency: Yellow leaves but veins remain green (opposite of zinc). Common in alkaline मातीs.",
+              "Fix: Ferrous sulfate (FeSO4) 0.5% foliar spray. Most effective early morning.",
+              "Note: Common in calcareous/alkaline मातीs of Punjab, Haryana"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Boron (B)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency: Death of growing tip. Hollow stems. Poor fruit set.",
+              "Fix: Borax 1 kg/acre माती application or 0.2% foliar spray",
+              "Critical in: Cauliflower, sunflower, groundnut"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Sulfur (S)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deficiency: Yellowing of young leaves. Stunted growth.",
+              "Fix: Gypsum (calcium sulfate) 100–200 kg/acre. Also corrects alkalinity.",
+              "पीकs that need most sulfur: Mustard, onion, garlic, pulses"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "माती testing reveals which micronutrients your माती lacks. Get a free माती Health Card test from your local agriculture department. A test every 2–3 years saves you money on unnecessary fertilizers."
+          }
+        ]
+      },
+      {
+        "id": "organicfert",
+        "title": "Organic Fertilizers — Natural Plant Food",
+        "tags": [
+          "Compost",
+          "FYM",
+          "Vermicompost"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Organic fertilizers release nutrients slowly, improve माती structure, and support beneficial microbes. They make chemical fertilizers work better too."
+          },
+          {
+            "type": "h3",
+            "text": "FYM (Farm Yard Manure / Gobar Khad)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Composition: 0.5% N, 0.25% P, 0.5% K on average",
+              "Use: 4–5 tons/acre 3–4 weeks before sowing (so it rots fully)",
+              "Make: Compost cow dung + straw + urine for 3–4 months",
+              "Value: ₹500–800 per ton"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Vermicompost (Kechua Khad)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "5x more nutrients than regular FYM",
+              "Composition: 1.5% N, 1% P, 0.5% K + many micronutrients",
+              "Use: 2–3 tons/acre",
+              "Sell extra: ₹5–8 per kg — good side income"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Green Manure (Hara Khad)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Grow Sesbania (Dhaincha) or Sunhemp for 45–55 days, then plow into field",
+              "Adds 40–60 kg Nitrogen per acre — equal to 90–130 kg Urea!",
+              "Best practice: Grow between two main पीकs"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Jeevamrit (Liquid Fertilizer)"
+          },
+          {
+            "type": "text",
+            "text": "Mix in 200-liter drum: 10 kg fresh cow dung + 10 liters cow urine + 2 kg jaggery + 2 kg besan (gram flour) + handful of माती from banyan tree base. Stir twice daily for 48 hours. Dilute 1:10 and apply in irrigation पाणी or spray."
+          },
+          {
+            "type": "fact",
+            "text": "Using 50% chemical fertilizer + 50% organic sources gives equal or better yield than 100% chemical, at 30–40% lower cost."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crops",
+    "emoji": "🌾",
+    "title": "पीक Growing Guides",
+    "color": "#854F0B",
+    "bg": "#FAEEDA",
+    "articles": [
+      {
+        "id": "wheat",
+        "title": "Wheat (गेहूँ) — Complete Guide",
+        "tags": [
+          "Rabi पीक",
+          "Nov–Apr",
+          "6 Irrigations"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "India's most important rabi (winter) पीक. Sown after kharif harvest. Needs cool winters and warm summers. Over 30 million hectares grown annually."
+          },
+          {
+            "type": "h3",
+            "text": "Season Calendar"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Field preparation: October–November",
+              "Sowing: 1–25 November (best window)",
+              "First irrigation: 20–21 days (crown root stage)",
+              "Harvest: March–April"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "माती & Preparation"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Best माती: गाळाची/loamy माती, good drainage",
+              "Plow 3–4 times, last pass with rotavator for fine seedbed",
+              "Add 4–5 tons FYM before last plowing",
+              "Target माती pH: 6–7.5"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Seed Rate & Sowing"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Seed rate: 40–45 kg/acre (timely sowing), 50–55 kg/acre (late sowing)",
+              "Depth: 5–6 cm",
+              "Row spacing: 20–22 cm",
+              "Varieties: HD-2967, GW-322, PBW-343, HD-3086"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Fertilizer Schedule"
+          },
+          {
+            "type": "list",
+            "items": [
+              "DAP: 50 kg/acre at sowing",
+              "Urea: Split in 3 doses — 1/3 at sowing, 1/3 at 1st irrigation, 1/3 at 2nd irrigation",
+              "MOP: 20 kg/acre at sowing",
+              "Zinc sulfate: 10 kg/acre if zinc deficient"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "6 Critical Irrigations"
+          },
+          {
+            "type": "list",
+            "items": [
+              "1st: 20–21 days — Crown Root Initiation (MUST, most critical)",
+              "2nd: 40–45 days — Tillering",
+              "3rd: 60–65 days — Jointing",
+              "4th: 80–85 days — Flowering/Heading (MUST)",
+              "5th: 100–105 days — Milk/Dough stage",
+              "6th: 115–120 days — Grain filling (optional)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Treat seed with Carboxin + Thiram before sowing (prevents loose smut)",
+              "Sow on time — each week's delay after Nov 25 reduces yield by 1–1.5 quintal/acre",
+              "Apply Urea in splits — improves nitrogen use efficiency by 30%"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't sow after December 15 — 'late sown' varieties are different",
+              "Don't burn stubble — adds carbon, prevents माती erosion, retains moisture",
+              "Don't over-irrigate at 1st irrigation — light irrigation only, else 'lodging' occurs"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Wheat sown on November 1–10 consistently gives 2–4 quintals/acre more than wheat sown on December 1–10, all else being equal."
+          }
+        ]
+      },
+      {
+        "id": "rice",
+        "title": "Rice / Paddy (धान) — Complete Guide",
+        "tags": [
+          "Kharif पीक",
+          "Jun–Nov",
+          "पाणी Intensive"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "India's most important kharif (summer-monsoon) पीक. Feeds more than half of India. Requires flooded conditions in most varieties."
+          },
+          {
+            "type": "h3",
+            "text": "Season Calendar"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Nursery preparation: May–June",
+              "Transplanting: June–July (after 25–30 days in nursery)",
+              "Panicle initiation: August–September",
+              "Harvest: October–November"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Nursery Preparation"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Area: 100 sq meters per acre of main field",
+              "Seed rate: 20–25 kg/acre (for transplanting)",
+              "Seed treatment: Soak 24 hours, then incubate 24 hours for germination",
+              "Treat with Carbendazim 2g/kg seed"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Transplanting"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Age of seedling: 25–30 days (not older — older seedlings give less yield)",
+              "Row × plant spacing: 20 × 15 cm",
+              "Transplant 2–3 seedlings per hill",
+              "Best time: early morning or evening — not in peak heat"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Fertilizer Schedule"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Nitrogen: 50–60 kg/acre total, split in 3 doses",
+              "Dose 1 (Basal, at transplanting): 1/3 Urea",
+              "Dose 2 (Tillering, 20 days after transplant): 1/3 Urea",
+              "Dose 3 (Panicle initiation, 50 days): 1/3 Urea",
+              "Phosphorus (DAP): 25 kg/acre at transplanting only"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "पाणी Management"
+          },
+          {
+            "type": "list",
+            "items": [
+              "0–7 days after transplant: 3–5 cm standing पाणी",
+              "7–50 days: Maintain 5 cm standing पाणी",
+              "50–65 days: Drain field once for 5–7 days (increases yield!)",
+              "65 days–harvest: Maintain 3–5 cm पाणी",
+              "10 days before harvest: Drain completely"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Use SRI method (System of Rice Intensification) — increases yield by 20–30% with 25% less पाणी",
+              "Apply zinc sulfate 10 kg/acre (paddy मातीs are most zinc-deficient)",
+              "Scout for Brown Plant Hopper weekly — most damaging pest"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't transplant seedlings older than 35 days — yield drops sharply",
+              "Don't apply urea when पाणी is standing deep — it escapes as gas",
+              "Don't delay harvest after maturity — grain shattering loss"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "The mid-season drainage (draining the field for 5–7 days around 50 days after transplanting) increases yield by 10–15% by forcing roots deeper and reducing unproductive tillers."
+          }
+        ]
+      },
+      {
+        "id": "cotton",
+        "title": "Cotton (कपास) — Complete Guide",
+        "tags": [
+          "Kharif पीक",
+          "May–Dec",
+          "Cash पीक"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "India's 'white gold'. Major cash पीक. Needs black माती and warm climate. Modern Bt cotton (hybrid) gives 3–4x higher yield than older varieties."
+          },
+          {
+            "type": "h3",
+            "text": "Season Calendar"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Sowing: May–June (after summer rains begin)",
+              "Vegetative stage: July–August",
+              "Boll development: September–October",
+              "Picking (3–4 pickings): October–December"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "माती & Land Preparation"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Best माती: Deep black माती (regur), good moisture retention",
+              "Deep plowing (30 cm) in summer before sowing",
+              "Ridge and furrow method preferred — better drainage",
+              "Spacing: 90 × 60 cm (hybrid varieties), 60 × 30 cm (desi)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Fertilizer Schedule"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Nitrogen: 40–50 kg/acre (apply in 3 splits to avoid vegetative excess)",
+              "Phosphorus: 20–25 kg/acre at sowing",
+              "Potassium: 20 kg/acre at sowing",
+              "Sulphur: 10 kg/acre (very important for cotton)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Use only certified Bt hybrid seeds from reliable source",
+              "Grow refugia (non-Bt rows) as per guidelines — 5% of area",
+              "Spray for bollworm at first sign — losses are massive if delayed",
+              "Multiple pickings — do not wait for all bolls to open"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't over-apply nitrogen — causes excess leaf growth, reduces fruiting",
+              "Don't पाणीlog — cotton roots cannot tolerate standing पाणी",
+              "Don't use same pesticide repeatedly — pests develop resistance fast"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "American Bollworm, Pink Bollworm, and Tobacco Streak Virus are the three biggest threats to cotton in India. Weekly scouting from July onwards saves 30–50% of yield."
+          }
+        ]
+      },
+      {
+        "id": "pulses",
+        "title": "Pulses (दलहन) — Overview",
+        "tags": [
+          "Nitrogen Fixers",
+          "Protein पीकs",
+          "Low Input"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Pulses (lentils, chickpea, moong, urad, arhar) are nature's fertilizer factories. Their roots carry bacteria that fix atmospheric nitrogen into माती — free fertilizer!"
+          },
+          {
+            "type": "h3",
+            "text": "How Pulses Fix Nitrogen"
+          },
+          {
+            "type": "text",
+            "text": "A special bacteria called Rhizobium lives in the roots of pulses. It converts nitrogen gas from air (78% of air is N2) into a form plants and माती can use. After harvesting, this nitrogen stays in the माती for the next पीक."
+          },
+          {
+            "type": "h3",
+            "text": "Rhizobium Inoculation"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Buy Rhizobium culture from agriculture shop (₹30–50 per pack)",
+              "Mix with jaggery solution and coat seeds before sowing",
+              "Increases yield by 10–20% and adds 20–30 kg N per acre to माती",
+              "Critical for first-time pulse cultivation in a field"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Key Pulses and Their Seasons"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Chickpea (Chana) — Rabi, Oct–Mar, best in गाळाची/black माती",
+              "Lentil (Masoor) — Rabi, Oct–Mar, cool and dry climate",
+              "Moong (Green Gram) — Zaid & Kharif, fastest growing (60–70 days)",
+              "Urad (Black Gram) — Kharif, hot and humid, south India",
+              "Arhar/Toor — Kharif, 150–180 days, needs deep black माती"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Always inoculate seed with Rhizobium before sowing",
+              "Grow pulses before wheat in rotation — wheat gets free nitrogen bonus",
+              "Apply only phosphorus fertilizer at sowing (no N needed!)",
+              "Thin sowing is better — overcrowding reduces pod formation"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What NOT to do"
+          },
+          {
+            "type": "dontlist",
+            "items": [
+              "Don't apply nitrogen fertilizer — it actually reduces fixation by bacteria",
+              "Don't पाणीlog — all pulses have very low flood tolerance",
+              "Don't spray insecticide when flowers are open — kills pollinator bees"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Growing pulses in rotation is equivalent to applying 30–60 kg of Urea per acre for free. This is called 'biological nitrogen fixation' and reduces fertilizer cost significantly."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "irrigation",
+    "emoji": "💧",
+    "title": "पाणी & Irrigation",
+    "color": "#0F6E56",
+    "bg": "#E1F5EE",
+    "articles": [
+      {
+        "id": "methods",
+        "title": "Irrigation Methods Compared",
+        "tags": [
+          "Drip",
+          "Sprinkler",
+          "Flood"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "How you पाणी your पीकs affects both yield and profit. Modern irrigation methods save पाणी and reduce cost — but need initial investment."
+          },
+          {
+            "type": "h3",
+            "text": "Flood Irrigation (Khet Sechhai)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Cost: ₹0 setup",
+              "पाणी saved: 0% (most wasteful)",
+              "Suitable for: Paddy, sugarcane",
+              "Disadvantage: 40–60% पाणी wasted by evaporation and runoff",
+              "Labor: High — need to watch and manage पाणी flow"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Furrow Irrigation (Naali Sechhai)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Cost: Very low (just tractor for making furrows)",
+              "पाणी saved: 20–30% vs flood",
+              "Suitable for: Vegetables, maize, sugarcane, cotton",
+              "Method: पाणी flows through furrows between rows, not over entire field"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Drip Irrigation (Tuk-Tuk Sechhai)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Cost: ₹40,000–60,000 per acre (80–90% subsidy for small farmers!)",
+              "पाणी saved: 50–70% vs flood",
+              "Suitable for: Fruits, vegetables, banana, pomegranate, cotton, sugarcane",
+              "Also delivers fertilizers through pipes — called 'Fertigation'",
+              "Government subsidy: 90% for SC/ST, 75% for small farmers under PMKSY"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Sprinkler Irrigation"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Cost: ₹15,000–25,000 per acre (subsidy available)",
+              "पाणी saved: 30–50% vs flood",
+              "Suitable for: Wheat, vegetables, groundnut, fodder पीकs",
+              "Best for sandy/light मातीs where पाणी needs to be applied gently"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "SRI — System of Rice Intensification"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Cost: ₹0 extra",
+              "पाणी saved: 25–50% vs traditional paddy flooding",
+              "Yield increase: 20–50% over conventional transplanting",
+              "Method: Young seedlings (8–12 days), wider spacing, moist but not flooded"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "With government subsidies under PMKSY (PM Krishi Sinchayee Yojana), a small farmer can install drip irrigation at just ₹4,000–8,000 per acre. Apply at district agriculture office."
+          }
+        ]
+      },
+      {
+        "id": "scheduling",
+        "title": "When to पाणी — Smart Scheduling",
+        "tags": [
+          "पीक Stages",
+          "पाणी Stress",
+          "ETc"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "पाणीing at wrong time wastes पाणी and reduces yield. Every पीक has 'critical stages' when पाणी stress causes permanent yield loss."
+          },
+          {
+            "type": "h3",
+            "text": "Simple Field Test for Irrigation Need"
+          },
+          {
+            "type": "text",
+            "text": "Push a wooden stick 6 inches into माती. Pull out. If moist माती is stuck to stick — no irrigation needed. If stick comes out dry and clean — irrigate today."
+          },
+          {
+            "type": "h3",
+            "text": "Critical पाणीing Stages by पीक"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Wheat: Crown root (21 days) ★★★, Tillering (45 days) ★★★, Flowering (80–90 days) ★★★",
+              "Rice: Transplanting + Tillering + Flowering + Grain filling (all critical)",
+              "Maize: Tasseling + Silking stage (55–65 days) — MOST critical. Skip = 50% yield loss",
+              "Cotton: Boll formation (60–90 days after sowing) — most critical",
+              "Groundnut: Pegging stage (35–45 days) and Pod filling (90–105 days)",
+              "Soybean: Flowering to pod filling (50–80 days)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Signs of पाणी Stress"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Leaves curl inward (plant reducing surface area to save पाणी)",
+              "Wilting in morning hours (severe stress)",
+              "Blue-green color change in leaves",
+              "Premature leaf drop"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Signs of Over-पाणीing"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Yellow lower leaves (nitrogen being washed down)",
+              "Stunted growth despite irrigation",
+              "Root rot (foul smell from माती)",
+              "White salt crust on माती surface"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "पाणीing in the evening is better than afternoon — reduces evaporation by 20–30%. Early morning is best for sprinkler as leaves dry quickly and prevent disease."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pests",
+    "emoji": "🐛",
+    "title": "Pests & Diseases",
+    "color": "#993C1D",
+    "bg": "#FAECE7",
+    "articles": [
+      {
+        "id": "identification",
+        "title": "Identifying Common Pests",
+        "tags": [
+          "Scout Weekly",
+          "Early Action",
+          "Save 50–80%"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Early identification saves 50–80% of पीक loss. Scout your field every week — walk in a 'W' pattern covering all corners. Look at 20 random plants each time."
+          },
+          {
+            "type": "h3",
+            "text": "Aphids (Mahu / Chepra)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: Tiny green/black/brown insects clustering on leaf undersides and tender shoots. Sticky honeydew substance. Curled leaves.",
+              "Most active: Cool हवामान (Nov–Feb)",
+              "Fix: Imidacloprid 17.8 SL — 0.5 ml per liter पाणी. Or Neem oil 5 ml/liter.",
+              "Natural enemy: Ladybird beetles eat aphids — don't spray if ladybirds are present"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Whitefly (Safed Makhhi)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: Tiny white flying insects. Yellow leaves. Spreads deadly viruses like TYLCV in tomato, CLCuD in cotton.",
+              "Fix: Yellow sticky traps (₹5 each) + Thiamethoxam 25 WG 0.3g/liter",
+              "Prevention: Mineral oil spray (5 ml/liter) prevents virus transmission"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Stem Borer (Tana Chedak)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: In young plants: 'Dead heart' — central leaf turns yellow and dies. In older plants: 'White ear' — panicle is empty.",
+              "Affects: Rice, maize, sugarcane, sorghum",
+              "Fix: Release Trichogramma egg parasitoid (biological control) or Chlorpyriphos 10G granules in plant whorl"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Thrips"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: Silver-grey streaks on leaves. Curled leaf margins. Tiny thread-like insects visible with hand lens.",
+              "Affects: Onion, cotton, chili, groundnut",
+              "Fix: Spinosad 45% SC — 0.3 ml/liter or Fipronil 5% SC — 1.5 ml/liter"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Brown Plant Hopper (BPH) — Rice"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: 'Hopperburn' — circular patches of dried, brown rice plants. Insects at base of plant.",
+              "Very destructive — can destroy entire field in 7–10 days",
+              "Fix: Drain पाणी from field + Buprofezin 25 SC spray. Do NOT spray Pyrethroids — causes outbreak!"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Setting up light traps attracts and kills moths at night — reduces egg-laying. One light trap per 2 acres saves one pesticide spray worth ₹500–800 per acre."
+          }
+        ]
+      },
+      {
+        "id": "diseases",
+        "title": "Common पीक Diseases",
+        "tags": [
+          "Fungal",
+          "Bacterial",
+          "Viral"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Most पीक diseases are caused by fungi (70%), bacteria (20%), or viruses (10%). Fungal diseases can be treated with fungicides. Viral diseases have no cure — prevention only."
+          },
+          {
+            "type": "h3",
+            "text": "Yellow Rust / Stripe Rust (Pila Ttika) — Wheat"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: Yellow-orange powdery stripes running along wheat leaves. In rows — not random patches.",
+              "Favors: Cool हवामान (10–15°C) with light rain or dew. Feb–March window.",
+              "Fix: Propiconazole (Tilt) 25 EC — 1 ml/liter. Spray immediately, don't wait. Repeat after 14 days if needed.",
+              "Economic threshold: Spray when 5% plants show infection"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Blast Disease — Rice"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: Grey-centered, brown-bordered diamond shaped spots on leaves. Most dangerous: 'Neck blast' — panicle base turns grey and breaks.",
+              "Favors: High humidity + low temperature at night + excess nitrogen.",
+              "Fix: Tricyclazole 75% WP — 0.6g/liter or Isoprothiolane 40% EC — 1.5 ml/liter",
+              "Prevention: Do NOT apply excess nitrogen. Use blast-resistant varieties."
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Powdery Mildew (Safed Chhachhi)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: White powdery coating on leaves and stems. Looks like flour dusted on plant.",
+              "Affects: Wheat, peas, cucurbits, grapes, mango",
+              "Favors: Cool, cloudy हवामान. High humidity.",
+              "Fix: Sulfur 80% WP — 2g/liter. Or Hexaconazole 5% EC — 2 ml/liter. Or Carbendazim 50% WP — 1g/liter"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Bacterial Leaf Blight — Rice"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: पाणी-soaked lesions from leaf tip/margins. Becomes yellow-white as it spreads. 'Kresek' — seedlings wilt completely.",
+              "Favors: Flooding after transplanting, high nitrogen, typhoon/storm damage",
+              "Fix: NO effective chemical cure for bacterial diseases. Copper oxychloride gives partial control. Drain field.",
+              "Prevention: Resistant varieties, avoid excess N, clean seeds"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Wilt Diseases (Murjhaan)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Signs: Plant suddenly wilts and dies even though माती has पाणी. Vascular (पाणी-conducting) tissue turns brown inside stem.",
+              "Affects: Tomato, cotton, chickpea, banana",
+              "Cause: Fusarium or Verticillium fungi in माती",
+              "Fix: No cure for individual plant. Remove and burn. Drench माती with Carbendazim + Copper mixture.",
+              "Prevention: पीक rotation, resistant varieties, healthy seedlings from disease-free nursery"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Most fungal diseases spread in spores carried by wind. A single infected plant produces millions of spores. Scout and remove infected plants immediately — this 'roguing' prevents 60–80% of spread."
+          }
+        ]
+      },
+      {
+        "id": "ipm",
+        "title": "Integrated Pest Management (IPM)",
+        "tags": [
+          "Reduce Pesticide",
+          "Save Money",
+          "Environment Safe"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "IPM means using all pest control tools together — cultural, biological, chemical — in the right order. First try non-chemical methods. Use pesticides only as last resort."
+          },
+          {
+            "type": "h3",
+            "text": "Step 1 — Cultural Control (First Line)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Deep summer plowing — kills pupae and egg masses in माती",
+              "Seed treatment — kills seed-borne diseases before they start",
+              "पीक rotation — breaks pest life cycle",
+              "Trap पीकs — grow marigold border to attract pests away from main पीक",
+              "Resistant varieties — biggest impact, zero cost"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Step 2 — Biological Control"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Trichogramma cards — egg parasitoid wasps, kill moth eggs (₹20–30/acre)",
+              "NPV (Nuclear Polyhedrosis Virus) — bio-pesticide for Spodoptera and Heliothis",
+              "Pseudomonas fluorescens — spray to prevent माती-borne diseases",
+              "Neem products — Neem oil (5 ml/L) or NSKE 5% — disrupts pest feeding and breeding"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Step 3 — Chemical Control (Last Resort)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Apply only when pest population crosses 'Economic Threshold Level' (ETL)",
+              "Use recommended doses — more is NOT better",
+              "Rotate chemical groups to prevent resistance",
+              "Don't spray within 10 days of harvest (pre-harvest interval)",
+              "Use proper PPE — mask, gloves, boots while spraying"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Pesticide Safety Rules"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Read label fully before use",
+              "Wear protective gear — never spray without it",
+              "Never spray against wind direction",
+              "Wash hands, face, clothes after spraying",
+              "Store pesticides in original container, locked, away from children",
+              "Never eat, drink, smoke while handling pesticides"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Studies show that IPM reduces pesticide use by 50–60% while maintaining the same yield. It saves ₹1,500–3,000 per acre in pesticide costs alone."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "organic",
+    "emoji": "🌿",
+    "title": "Organic Farming",
+    "color": "#3B6D11",
+    "bg": "#EAF3DE",
+    "articles": [
+      {
+        "id": "basics",
+        "title": "How to Start Organic Farming",
+        "tags": [
+          "3-Year Transition",
+          "Premium Price",
+          "PGS Certification"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "Organic farming uses no synthetic fertilizers or pesticides. Takes 3 years to certify. Premium price is 20–50% higher than regular market. Both profitability and माती health improve long-term."
+          },
+          {
+            "type": "h3",
+            "text": "3-Year Transition Plan"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Year 1: Stop all chemical inputs. Add maximum organic matter. Yield may drop 15–30%.",
+              "Year 2: Yields recover. माती biology rebuilds. Apply Jeevamrit, vermicompost regularly.",
+              "Year 3: Yields match or exceed conventional. Apply for PGS/organic certification.",
+              "After Year 3: Certified organic, sell at premium market"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Getting Certification — PGS India"
+          },
+          {
+            "type": "list",
+            "items": [
+              "PGS = Participatory Guarantee System (government run, free)",
+              "Form a group of 5–50 farmers in same village",
+              "Register online at pgsindia-ncof.gov.in",
+              "Annual inspection by group members + local officer",
+              "Get PGS Organic certificate + green logo for premium sale"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Premium Price Sources"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Direct sale to city consumers (WhatsApp groups, residential colonies)",
+              "Organic markets in cities — Delhi Organic Haat, etc.",
+              "E-commerce: BigBasket, Amazon, Nature's Basket",
+              "Restaurants, hotels that want certified organic supply",
+              "Export — highest premium, needs NPOP certification"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "What to DO"
+          },
+          {
+            "type": "dolist",
+            "items": [
+              "Start with 1 acre to learn before converting whole farm",
+              "Maintain detailed diary — required for certification",
+              "Develop local market first before converting more land",
+              "Join organic farmer group — shared knowledge and costs"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "A group of farmers in Maharashtra converted to organic and started selling directly to Mumbai consumers via WhatsApp group. They get ₹40/kg for organic wheat vs ₹22/kg market rate — 82% premium."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "schemes",
+    "emoji": "🏛️",
+    "title": "Government Schemes & Help",
+    "color": "#533AB7",
+    "bg": "#EEEDFE",
+    "articles": [
+      {
+        "id": "subsidies",
+        "title": "All Farmer Schemes in One Place",
+        "tags": [
+          "Free Money",
+          "Subsidies",
+          "Easy Apply"
+        ],
+        "body": [
+          {
+            "type": "intro",
+            "text": "The government has many schemes that directly help farmers. Most are underutilized because farmers don't know about them. Here's a complete guide."
+          },
+          {
+            "type": "h3",
+            "text": "PM-KISAN — ₹6,000/Year Direct"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Amount: ₹6,000/year in 3 installments of ₹2,000 each",
+              "Who qualifies: Small/marginal farmers with land in own name",
+              "How to apply: pmkisan.gov.in OR visit nearest Common Service Centre (CSC)",
+              "Documents: Aadhaar, land records (Khatoni), bank account linked to Aadhaar"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "PMFBY — पीक Insurance at 1.5% Premium"
+          },
+          {
+            "type": "list",
+            "items": [
+              "You pay only: 1.5% of sum insured (Rabi), 2% (Kharif), 5% (horticulture)",
+              "Government pays remaining 90–95%! ",
+              "Covers: Drought, flood, hailstorm, pest attack, post-harvest losses",
+              "How to apply: Through bank before sowing. Or KCC loan auto-enrolls you.",
+              "Claim: Report पीक damage within 72 hours (call 14447)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "PMKSY — Irrigation Subsidy (up to 90%!)"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Subsidy on drip irrigation: 90% for small/marginal, 75% for others",
+              "Covers: Drip, sprinkler, rain-gun systems",
+              "How to apply: District Agriculture Office / State Horticulture Department",
+              "Also covers: पाणी storage structures, farm ponds"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "Kisan Credit Card (KCC) — Loan at 4%"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Interest rate: Only 4% per year (vs 24–36% moneylender rate)",
+              "Loan amount: Up to ₹3 lakhs (higher for bigger farms)",
+              "Use for: Seeds, fertilizers, labor, equipment, post-harvest expenses",
+              "How to apply: Any nationalized bank or cooperative bank with land documents"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "माती Health Card — Free माती Test"
+          },
+          {
+            "type": "list",
+            "items": [
+              "What you get: Exact NPK levels, pH, micronutrients of your माती",
+              "How often: Free testing every 2 years",
+              "What to do: Apply recommended fertilizers from card — saves 15–20% fertilizer cost",
+              "Where: District agriculture department or Krishi Vigyan Kendra (KVK)"
+            ]
+          },
+          {
+            "type": "h3",
+            "text": "eNAM — Sell at Better Price"
+          },
+          {
+            "type": "list",
+            "items": [
+              "What: Online national market for selling पीकs directly across India",
+              "Website: enam.gov.in",
+              "Benefit: Get competitive bids from buyers across the country",
+              "Requirement: Register at nearest linked mandi (APMC)"
+            ]
+          },
+          {
+            "type": "fact",
+            "text": "Most farmers lose ₹20,000–50,000 per year by not claiming PM-KISAN and पीक insurance they're eligible for. Check with your local agriculture officer to verify your eligibility."
+          }
+        ]
+      }
+    ]
+  }
+]
