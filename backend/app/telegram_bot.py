@@ -8,7 +8,8 @@ from telegram.ext import (
 from dotenv import load_dotenv
 from services.core_engine import (
     process_user_query, get_quick_recommendations, 
-    get_farm_summary, save_user_location, get_user_location
+    get_farm_summary, save_user_location, get_user_location, 
+    WeatherAPI, ContextBuilder
 )
 import logging
 
@@ -212,15 +213,67 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "🧪 Soil Info":
         await soil_info(update, context)
     elif text == "📍 Location":
-        await update.message.reply_text("📍 Please type your location (e.g., 'Mumbai, Maharashtra' or 'Delhi'):")
+        await update.message.reply_text(
+            "📍 *Set Your Location*\n\n"
+            "Please type your city name or area (e.g., 'Mumbai', 'Kolkata', 'Delhi', 'Bangalore')\n\n"
+            "This helps me give you weather-specific farming recommendations for your location!",
+            parse_mode='Markdown'
+        )
         context.user_data['waiting_for_location'] = True
     elif text == "❓ Help":
         await help_command(update, context)
     elif context.user_data.get('waiting_for_location'):
         # User is providing their location
-        save_user_location(user_id, text)
+        location_name = text.strip()
+        save_user_location(user_id, location_name)
         context.user_data['waiting_for_location'] = False
-        await update.message.reply_text(f"✅ Location saved: {text}\n\nNow I can give you location-specific recommendations!")
+        
+        # Fetch weather for the location
+        try:
+            weather_info = WeatherAPI.get_weather(location_name)
+            season_info = ContextBuilder.get_season()
+            
+            if weather_info.get('success'):
+                weather_text = f"""
+✅ *Location Saved: {location_name}*
+
+🌡️ *Current Weather:*
+• Temperature: {weather_info.get('temperature', 'N/A')}°C
+• Humidity: {weather_info.get('humidity', 'N/A')}%
+• Rainfall: {weather_info.get('rainfall', 'N/A')}mm
+• Condition: {weather_info.get('condition', 'N/A')}
+
+🌾 *Current Season:* {season_info}
+
+Now I can give you location-specific farming recommendations! Ask me anything:
+• Crop suggestions
+• Soil health tips
+• Irrigation advice
+• Pest management
+• Profit estimation
+                """
+            else:
+                weather_text = f"""
+✅ *Location Saved: {location_name}*
+
+⚠️ Could not fetch live weather data, but I'll use historical data for recommendations.
+
+🌾 *Current Season:* {season_info}
+
+Ask me about:
+• Crop suggestions
+• Soil health
+• Farming tips
+                """
+            
+            await update.message.reply_text(weather_text, parse_mode='Markdown')
+        except Exception as e:
+            logger.error(f"Error fetching weather: {e}")
+            await update.message.reply_text(
+                f"✅ Location saved: {location_name}\n\n"
+                f"I'll use this location for recommendations. "
+                f"Ask me about crops, soil, or farming tips!"
+            )
     else:
         # If in chat mode, send to AI
         if context.user_data.get('in_chat_mode'):

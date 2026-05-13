@@ -11,13 +11,27 @@ from groq import Groq
 env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-# Configure the API key
-api_key = os.environ.get("GROQ_API_KEY")
-if not api_key:
-    raise ValueError("GROQ_API_KEY not found in environment variables. Please add it to .env file.")
+# Configure the API keys (primary and fallbacks)
+api_keys = []
+for key_name in ["GROQ_API_KEY", "GROQ_API_KEY_2", "GROQ_API_KEY_3"]:
+    if os.environ.get(key_name):
+        api_keys.append(os.environ.get(key_name))
 
-client = Groq(api_key=api_key)
-print(f"[LLM] Configured Groq API")
+if not api_keys:
+    raise ValueError("No GROQ_API_KEY found in environment variables. Please add it to .env file.")
+
+current_key_idx = 0
+client = Groq(api_key=api_keys[current_key_idx], timeout=10.0)
+print(f"[LLM] Configured Groq API with {len(api_keys)} key(s)")
+
+def switch_api_key():
+    global current_key_idx, client
+    if len(api_keys) <= 1:
+        return False
+    current_key_idx = (current_key_idx + 1) % len(api_keys)
+    client = Groq(api_key=api_keys[current_key_idx], timeout=10.0)
+    print(f"[LLM] Switched to fallback Groq API key (index {current_key_idx})")
+    return True
 
 # ===== REQUEST THROTTLING & RATE LIMITING =====
 class RequestThrottler:
@@ -111,6 +125,11 @@ def cached_llm_call(prompt: str, max_retries: int = 3) -> str:
             
             # Check if it's a quota/rate limit error
             if "429" in str(e) or "quota" in error_msg or "resource exhausted" in error_msg:
+                if switch_api_key():
+                    print(f"[QUOTA ERROR] Switching to fallback API key...")
+                    time.sleep(0.5) # tiny pause before retry
+                    continue
+                
                 if attempt < max_retries:
                     # Exponential backoff: 2^attempt seconds
                     wait_time = 2 ** attempt
