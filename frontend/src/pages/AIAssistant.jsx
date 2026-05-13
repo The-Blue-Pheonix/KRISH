@@ -67,6 +67,11 @@ export default function AIAssistant() {
       };
       
       setMessages((prev) => [...prev, aiResponse]);
+
+      // Auto-speak AI response using Web Speech Synthesis API (Zero Latency)
+      if (voiceService.isSynthesisAvailable()) {
+        await voiceService.speakReply(aiResponse.text);
+      }
     } catch (err) {
       console.error('API Error:', err);
       const errorResponse = {
@@ -75,6 +80,11 @@ export default function AIAssistant() {
         text: 'Sorry, I couldn\'t connect to the server. Please make sure the backend is running and try again.'
       };
       setMessages((prev) => [...prev, errorResponse]);
+
+      // Also speak error response
+      if (voiceService.isSynthesisAvailable()) {
+        await voiceService.speakReply(errorResponse.text);
+      }
     } finally {
       setIsTyping(false);
     }
@@ -157,18 +167,25 @@ export default function AIAssistant() {
       
       setMessages((prev) => [...prev, aiResponse]);
       
-      // Auto-play response if audio is available
+      // Auto-play audio response if available (from server)
       if (result?.audio) {
         setIsPlayingAudio(true);
         try {
-          console.log('🔊 Auto-playing AI response...');
+          console.log('🔊 Auto-playing AI response from server...');
           await voiceService.playAudio(result.audio);
           console.log('✅ Response audio finished playing');
         } catch (audioError) {
           console.error('Error playing audio:', audioError);
+          // Fallback to Web Speech Synthesis if audio playback fails
+          if (voiceService.isSynthesisAvailable()) {
+            await voiceService.speakReply(aiResponse.text);
+          }
         } finally {
           setIsPlayingAudio(false);
         }
+      } else if (voiceService.isSynthesisAvailable()) {
+        // Use Web Speech Synthesis as fallback (Zero Latency)
+        await voiceService.speakReply(aiResponse.text);
       }
     } catch (err) {
       console.error('Voice chat error:', err);
@@ -178,6 +195,11 @@ export default function AIAssistant() {
         text: 'Sorry, I couldn\'t process your voice. Please try again or type your message.'
       };
       setMessages((prev) => [...prev, errorResponse]);
+
+      // Speak error response
+      if (voiceService.isSynthesisAvailable()) {
+        await voiceService.speakReply(errorResponse.text);
+      }
     } finally {
       setIsTyping(false);
       setInput('');
@@ -324,6 +346,44 @@ export default function AIAssistant() {
                 <div className="h-full bg-blue-500 animate-pulse" style={{ width: '100%' }}></div>
               </div>
               <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Auto-submit in 4s</span>
+            </div>
+          </div>
+        )}
+
+        {/* Text-to-Speech Controls */}
+        {voiceService.getSpeakingStatus() && (
+          <div className="mb-3 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+            <div className="flex items-center justify-between">
+              <p className="font-medium text-purple-700 dark:text-purple-300 flex items-center gap-2">
+                🔊 AI is speaking...
+                <span className="inline-block w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => voiceService.pauseSpeech()}
+                  className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full transition-colors text-xs font-semibold"
+                  title="Pause speech"
+                >
+                  ⏸️ Pause
+                </button>
+                <button
+                  type="button"
+                  onClick={() => voiceService.resumeSpeech()}
+                  className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full transition-colors text-xs font-semibold"
+                  title="Resume speech"
+                >
+                  ▶️ Resume
+                </button>
+                <button
+                  type="button"
+                  onClick={() => voiceService.stopSpeech()}
+                  className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors text-xs font-semibold"
+                  title="Stop speech"
+                >
+                  🛑 Stop
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -5,7 +5,7 @@
 
 class VoiceService {
   constructor() {
-    // Initialize Web Speech API
+    // Initialize Web Speech API for Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.recognition = new SpeechRecognition();
     this.isListening = false;
@@ -24,6 +24,23 @@ class VoiceService {
     this.recognition.interimResults = true;
     this.recognition.lang = 'en-IN'; // Default to Indian English
     this.recognition.maxAlternatives = 1;
+
+    // Initialize Web Speech Synthesis API for TTS
+    this.synthesis = window.speechSynthesis;
+    this.isSpeaking = false;
+    this.currentUtterance = null;
+    this.currentLanguage = 'en-IN';
+    this.synthesisVoices = [];
+    
+    // Load available voices when they're ready
+    if (this.synthesis) {
+      this.synthesis.onvoiceschanged = () => {
+        this.synthesisVoices = this.synthesis.getVoices();
+        console.log(`[TTS] ${this.synthesisVoices.length} voices available`);
+      };
+      // Initial voice load
+      this.synthesisVoices = this.synthesis.getVoices();
+    }
   }
 
   /**
@@ -196,7 +213,7 @@ class VoiceService {
   }
 
   /**
-   * Set language for speech recognition
+   * Set language for speech recognition AND text-to-speech
    */
   setLanguage(languageCode) {
     const languageMap = {
@@ -207,8 +224,10 @@ class VoiceService {
       'mr': 'mr-IN'
     };
     
-    this.recognition.lang = languageMap[languageCode] || 'en-IN';
-    console.log(`[Voice] Language set to: ${this.recognition.lang}`);
+    const mappedLang = languageMap[languageCode] || 'en-IN';
+    this.recognition.lang = mappedLang;
+    this.currentLanguage = mappedLang;
+    console.log(`[Voice] Language set to: ${mappedLang} (Speech Recognition & TTS)`);
   }
 
   /**
@@ -267,6 +286,229 @@ class VoiceService {
    */
   getListeningStatus() {
     return this.isListening;
+  }
+
+  /**
+   * ==================== TEXT-TO-SPEECH METHODS ====================
+   * Using Web Speech Synthesis API for zero-latency voice responses
+   */
+
+  /**
+   * Speak text using Web Speech Synthesis API
+   * Zero latency - responds immediately without server processing
+   * @param {string} text - The text to speak
+   * @param {Function} onEnd - Callback when speech ends
+   * @returns {Promise}
+   */
+  speakReply(text, onEnd) {
+    return new Promise((resolve) => {
+      if (!this.synthesis) {
+        console.error('[TTS] Speech Synthesis not available');
+        resolve();
+        return;
+      }
+
+      try {
+        // Cancel any ongoing speech
+        this.synthesis.cancel();
+        
+        // Create new utterance
+        const utterance = new SpeechSynthesisUtterance(text);
+        this.currentUtterance = utterance;
+
+        // Set voice based on language
+        const voice = this.getVoiceForLanguage(this.currentLanguage);
+        if (voice) {
+          utterance.voice = voice;
+        }
+
+        // Configure speech properties
+        utterance.pitch = 1.0; // Natural pitch
+        utterance.rate = 0.95; // Slightly slower for clarity
+        utterance.volume = 1.0; // Full volume
+        utterance.lang = this.currentLanguage;
+
+        // Event handlers
+        utterance.onstart = () => {
+          this.isSpeaking = true;
+          console.log('[TTS] 🔊 Speaking started...');
+        };
+
+        utterance.onend = () => {
+          this.isSpeaking = false;
+          console.log('[TTS] ✅ Speaking finished');
+          if (onEnd) onEnd();
+          resolve();
+        };
+
+        utterance.onerror = (event) => {
+          this.isSpeaking = false;
+          console.error('[TTS] Speech error:', event.error);
+          if (onEnd) onEnd();
+          resolve();
+        };
+
+        utterance.onpause = () => {
+          console.log('[TTS] ⏸️ Speech paused');
+        };
+
+        utterance.onresume = () => {
+          console.log('[TTS] ▶️ Speech resumed');
+        };
+
+        // Start speaking
+        this.synthesis.speak(utterance);
+        console.log('[TTS] Speaking:', text.substring(0, 50) + '...');
+      } catch (error) {
+        console.error('[TTS] Error during speech synthesis:', error);
+        this.isSpeaking = false;
+        resolve();
+      }
+    });
+  }
+
+  /**
+   * Stop ongoing speech synthesis
+   */
+  stopSpeech() {
+    if (this.synthesis) {
+      this.synthesis.cancel();
+      this.isSpeaking = false;
+      console.log('[TTS] 🛑 Speech stopped');
+    }
+  }
+
+  /**
+   * Pause ongoing speech
+   */
+  pauseSpeech() {
+    if (this.synthesis && this.isSpeaking) {
+      this.synthesis.pause();
+      console.log('[TTS] ⏸️ Speech paused');
+    }
+  }
+
+  /**
+   * Resume paused speech
+   */
+  resumeSpeech() {
+    if (this.synthesis && this.isSpeaking) {
+      this.synthesis.resume();
+      console.log('[TTS] ▶️ Speech resumed');
+    }
+  }
+
+  /**
+   * Get the appropriate voice for the current language
+   * @param {string} languageCode - Language code like 'en-IN', 'hi-IN'
+   * @returns {SpeechSynthesisVoice|null}
+   */
+  getVoiceForLanguage(languageCode) {
+    if (!this.synthesisVoices || this.synthesisVoices.length === 0) {
+      console.warn('[TTS] No voices available');
+      return null;
+    }
+
+    const languageMap = {
+      'en-IN': ['Google US English', 'English', 'en-US', 'en-IN'],
+      'hi-IN': ['Hindi', 'hi-IN', 'hi'],
+      'ta-IN': ['Tamil', 'ta-IN', 'ta'],
+      'bn-IN': ['Bengali', 'bn-IN', 'bn'],
+      'mr-IN': ['Marathi', 'mr-IN', 'mr'],
+    };
+
+    const preferredVoices = languageMap[languageCode] || ['English', 'en-US'];
+
+    // Try to find a voice matching the preferred list
+    for (let preferred of preferredVoices) {
+      const voice = this.synthesisVoices.find(v => 
+        v.name.includes(preferred) || 
+        v.lang.includes(preferred.split('-')[0])
+      );
+      if (voice) {
+        console.log(`[TTS] Selected voice: ${voice.name} (${voice.lang})`);
+        return voice;
+      }
+    }
+
+    // Fallback to first available voice
+    const fallback = this.synthesisVoices[0];
+    console.log(`[TTS] Using fallback voice: ${fallback?.name || 'default'}`);
+    return fallback;
+  }
+
+  /**
+   * Check if text-to-speech is available
+   */
+  isSynthesisAvailable() {
+    return !!(window.speechSynthesis);
+  }
+
+  /**
+   * Get current speech status
+   */
+  getSpeakingStatus() {
+    return this.isSpeaking;
+  }
+
+  /**
+   * Speak with detailed configuration options
+   * @param {string} text - Text to speak
+   * @param {Object} options - Configuration options
+   * @param {number} options.rate - Speech rate (0.5-2, default: 0.95)
+   * @param {number} options.pitch - Pitch level (0-2, default: 1)
+   * @param {number} options.volume - Volume (0-1, default: 1)
+   * @param {Function} options.onEnd - Callback when done
+   */
+  speakWithOptions(text, options = {}) {
+    return new Promise((resolve) => {
+      if (!this.synthesis) {
+        console.error('[TTS] Speech Synthesis not available');
+        resolve();
+        return;
+      }
+
+      try {
+        this.synthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        this.currentUtterance = utterance;
+
+        // Apply options
+        utterance.rate = options.rate || 0.95;
+        utterance.pitch = options.pitch || 1.0;
+        utterance.volume = options.volume || 1.0;
+        utterance.lang = this.currentLanguage;
+
+        const voice = this.getVoiceForLanguage(this.currentLanguage);
+        if (voice) utterance.voice = voice;
+
+        utterance.onstart = () => {
+          this.isSpeaking = true;
+          console.log('[TTS] 🔊 Speaking...');
+        };
+
+        utterance.onend = () => {
+          this.isSpeaking = false;
+          console.log('[TTS] ✅ Speaking finished');
+          if (options.onEnd) options.onEnd();
+          resolve();
+        };
+
+        utterance.onerror = (event) => {
+          this.isSpeaking = false;
+          console.error('[TTS] Error:', event.error);
+          if (options.onEnd) options.onEnd();
+          resolve();
+        };
+
+        this.synthesis.speak(utterance);
+      } catch (error) {
+        console.error('[TTS] Error:', error);
+        this.isSpeaking = false;
+        resolve();
+      }
+    });
   }
 }
 
