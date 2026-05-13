@@ -9,4 +9,5 @@ scikit-learn
 groq
 python-dotenv
 elevenlabs>=0.2.27
+python-telegram-bot>=20.0
 
