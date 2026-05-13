@@ -53,7 +53,7 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
             # Normalize city name (convert Bengali to English if needed)
             city = normalize_city_name(city)
             print(f"[WEATHER] Geocoding city: {city}")
-            geo_response = requests.get(GEOCODING_API_URL, params={"name": city, "count": 1})
+            geo_response = requests.get(GEOCODING_API_URL, params={"name": city, "count": 1}, timeout=10)
             geo_response.raise_for_status()
             geo_data = geo_response.json()
             
@@ -77,7 +77,7 @@ def get_weather(city: str = None, latitude: float = None, longitude: float = Non
             "timezone": "auto"
         }
         
-        response = requests.get(WEATHER_API_URL, params=params)
+        response = requests.get(WEATHER_API_URL, params=params, timeout=10)
         response.raise_for_status()
         
         data = response.json()
