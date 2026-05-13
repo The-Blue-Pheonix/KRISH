@@ -80,12 +80,12 @@ async def detect_plant_disease(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="File provided is not an image.")
     
     try:
-        # Save uploaded file temporarily for Kindwise API
+        # Save uploaded file temporarily for PlantNet API
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
             shutil.copyfileobj(file.file, temp_file)
             temp_path = temp_file.name
             
-        # Analyze using Kindwise
+        # Analyze using PlantNet
         analysis_result = analyze_plant_image(temp_path)
         
         # Clean up temp file

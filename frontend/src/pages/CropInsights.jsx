@@ -58,7 +58,7 @@ export default function CropInsights() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Analysis failed. Make sure KINDWISE_API_KEY is active.');
+        throw new Error(errorData.detail || 'Analysis failed. Make sure PLANTNET_API_KEY is active.');
       }
       
       const data = await response.json();
