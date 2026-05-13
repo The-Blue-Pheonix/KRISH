@@ -27,7 +27,12 @@ export const fetchPrediction = async (city = null, soil, latitude = null, longit
     url += params.toString();
     console.log(`📡 Full URL: ${url}`);
 
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -116,7 +121,12 @@ export const fetchProfitEstimate = async (
 
     url += params.toString();
 
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
