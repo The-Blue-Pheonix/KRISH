@@ -131,17 +131,18 @@ export default function AIAssistant() {
       async (finalTranscript) => {
         setIsListening(false);
         
-        if (!finalTranscript.trim()) {
-          alert('No speech was detected. Please make sure your microphone is working and try again.');
-          return;
-        }
-
-        // Auto-submit on silence detection
-        await submitVoiceQuery(finalTranscript);
+        // Don't submit here - let onSilence callback handle it
+        // This prevents duplicate submissions
       },
       // onSilence callback - triggered after 4 seconds of silence
       async (silentText) => {
         console.log('🤐 Silence detected! Auto-submitting:', silentText);
+        
+        if (!silentText.trim()) {
+          alert('No speech was detected. Please make sure your microphone is working and try again.');
+          return;
+        }
+
         await submitVoiceQuery(silentText);
       }
     );
@@ -407,13 +408,18 @@ export default function AIAssistant() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && isTyping) {
+                e.preventDefault();
+              }
+            }}
             placeholder={isListening ? 'Listening - speak clearly...' : 'Message Krishi AI or use voice...'}
             disabled={isListening}
             className="flex-1 bg-neutral-100 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 text-neutral-800 dark:text-neutral-100 rounded-full py-3 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors disabled:opacity-50"
           />
           <button 
             type="submit" 
-            disabled={!input.trim() || isListening}
+            disabled={!input.trim() || isListening || isTyping}
             className="absolute right-2 p-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-neutral-300 dark:disabled:bg-slate-700 text-white rounded-full transition-colors"
           >
             <Send size={16} />
