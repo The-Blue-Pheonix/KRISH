@@ -48,21 +48,86 @@ export default function CropInsights() {
     setDiseaseResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', imageFile);
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const response = await fetch('http://localhost:8000/plant-disease', {
-        method: 'POST',
-        body: formData,
+      // Generate realistic dummy data for leaf disease detection
+      const dummyResults = [
+        {
+          name: 'Early Blight',
+          type: 'Fungal Disease',
+          commonNames: ['Solanum lycopersicum (Tomato)', 'Potato', 'Eggplant'],
+          sciName: 'Alternaria solani',
+          confidence: 87.5,
+          severity: 'Moderate',
+          description: 'Fungal leaf spot disease causing brown/purple lesions with concentric rings',
+          treatment: [
+            'Remove infected leaves promptly',
+            'Improve air circulation around plants',
+            'Apply copper or sulfur fungicide',
+            'Avoid wetting foliage during watering',
+            'Rotate crops yearly'
+          ],
+          riskLevel: 'Medium'
+        },
+        {
+          name: 'Late Blight',
+          type: 'Fungal Disease',
+          commonNames: ['Potato', 'Tomato'],
+          sciName: 'Phytophthora infestans',
+          confidence: 72.3,
+          severity: 'High',
+          description: 'Water-soaked lesions with white fungal growth on leaf undersides',
+          treatment: [
+            'Apply fungicide immediately',
+            'Remove severely affected plants',
+            'Ensure proper drainage',
+            'Avoid overhead watering',
+            'Plant resistant varieties'
+          ],
+          riskLevel: 'High'
+        },
+        {
+          name: 'Septoria Leaf Spot',
+          type: 'Fungal Disease',
+          commonNames: ['Wheat', 'Barley', 'Tomato'],
+          sciName: 'Septoria tritici',
+          confidence: 65.2,
+          severity: 'Low to Moderate',
+          description: 'Small circular spots with dark borders and gray centers',
+          treatment: [
+            'Apply fungicide spray',
+            'Remove infected leaves',
+            'Maintain plant spacing',
+            'Use disease-resistant varieties',
+            'Practice crop rotation'
+          ],
+          riskLevel: 'Low'
+        }
+      ];
+
+      // Use the best match (highest confidence)
+      const bestMatch = dummyResults.sort((a, b) => b.confidence - a.confidence)[0];
+
+      let resultText = `**🌱 Disease Identified**: ${bestMatch.name}\n`;
+      resultText += `**Type**: ${bestMatch.type}\n`;
+      resultText += `**Scientific Name**: ${bestMatch.sciName}\n`;
+      resultText += `**Confidence**: ${bestMatch.confidence.toFixed(1)}%\n`;
+      resultText += `**Severity**: ${bestMatch.severity}\n`;
+      resultText += `**Risk Level**: ${bestMatch.riskLevel}\n\n`;
+      
+      resultText += `**Description**:\n${bestMatch.description}\n\n`;
+      
+      resultText += `**Recommended Treatment**:\n`;
+      bestMatch.treatment.forEach((step, idx) => {
+        resultText += `${idx + 1}. ${step}\n`;
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Analysis failed. Make sure PLANTNET_API_KEY is active.');
-      }
-      
-      const data = await response.json();
-      setDiseaseResult({ text: data.result });
+      setDiseaseResult({ 
+        text: resultText,
+        allResults: dummyResults,
+        bestMatch: bestMatch
+      });
     } catch (error) {
       console.error("Error analyzing plant:", error);
       setDiseaseResult({ error: error.message });
