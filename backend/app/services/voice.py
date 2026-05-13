@@ -1,32 +1,35 @@
+"""
+🔊 TEXT-TO-SPEECH MODULE
+Uses Microsoft Edge-TTS (FREE) instead of ElevenLabs for cost savings
+No API key required!
+"""
+
 import os
 from pathlib import Path
-import requests
-from elevenlabs.client import ElevenLabs
+import edge_tts
+import asyncio
+import tempfile
 
-# Default voice ID (can be changed)
-DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel - clear, friendly voice
+# Default voice for different languages
+VOICES = {
+    'hi': "hi-IN-SwaraNeural",      # Hindi - Female
+    'en': "en-IN-NeerjaNeural",     # English (India) - Female
+    'bn': "bn-IN-TanushreeNeural",  # Bengali - Female
+    'ta': "ta-IN-PallaviNeural",    # Tamil - Female
+    'mr': "mr-IN-ManoharaNeural",   # Marathi - Female
+}
 
-# Lazy initialize - only when needed
-_client = None
+DEFAULT_VOICE = "hi-IN-SwaraNeural"  # Hindi voice as default
 
-def _get_client():
-    """Lazy initialize ElevenLabs client"""
-    global _client
-    if _client is None:
-        api_key = os.getenv("ELEVENLABS_API_KEY")
-        if not api_key:
-            raise ValueError("ELEVENLABS_API_KEY not found in environment variables. Please add it to .env file.")
-        _client = ElevenLabs(api_key=api_key)
-        print(f"[Voice] ElevenLabs client initialized with API key")
-    return _client
 
-def text_to_speech(text: str, voice_id: str = DEFAULT_VOICE_ID) -> bytes:
+async def text_to_speech_async(text: str, language: str = "hi", voice_id: str = None) -> bytes:
     """
-    Convert text to speech using ElevenLabs API
+    Convert text to speech using Microsoft Edge-TTS (FREE)
     
     Args:
         text: The text to convert to speech
-        voice_id: The voice ID to use (default: Rachel)
+        language: Language code (hi, en, bn, ta, mr)
+        voice_id: Custom voice ID (optional, uses language default)
     
     Returns:
         Audio data as bytes (MP3 format)
@@ -35,44 +38,102 @@ def text_to_speech(text: str, voice_id: str = DEFAULT_VOICE_ID) -> bytes:
         if not text or len(text.strip()) == 0:
             raise ValueError("Text cannot be empty")
         
-        # Use ElevenLabs Python client
-        client = _get_client()
-        audio = client.generate(
-            text=text,
-            voice=voice_id,
-            model="eleven_monolingual_v1"
-        )
+        # Use language-specific voice or provided voice_id
+        voice = voice_id or VOICES.get(language, DEFAULT_VOICE)
         
-        # Collect audio bytes
-        audio_bytes = b"".join(audio)
-        print(f"[Voice] Generated {len(audio_bytes)} bytes of audio for text: {text[:50]}...")
+        # Create temporary file for MP3
+        temp_dir = Path(tempfile.gettempdir())
+        temp_file = temp_dir / f"tts_{hash(text) % 1000000}.mp3"
+        
+        # Generate speech using Edge-TTS
+        communicate = edge_tts.Communicate(text, voice)
+        await communicate.save(str(temp_file))
+        
+        # Read the file and return as bytes
+        with open(temp_file, 'rb') as f:
+            audio_bytes = f.read()
+        
+        # Clean up temp file
+        try:
+            os.remove(temp_file)
+        except:
+            pass
+        
+        print(f"[Voice] Generated {len(audio_bytes)} bytes of audio ({language}/{voice}): {text[:50]}...")
         return audio_bytes
     
     except Exception as e:
         print(f"[Voice] TTS Error: {str(e)}")
-        raise Exception(f"ElevenLabs TTS Error: {str(e)}")
+        raise Exception(f"Edge-TTS Error: {str(e)}")
+
+
+def text_to_speech(text: str, language: str = "hi", voice_id: str = None) -> bytes:
+    """
+    Synchronous wrapper for text_to_speech_async
+    
+    Args:
+        text: The text to convert to speech
+        language: Language code
+        voice_id: Custom voice ID
+    
+    Returns:
+        Audio data as bytes
+    """
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_bytes = loop.run_until_complete(text_to_speech_async(text, language, voice_id))
+        loop.close()
+        return audio_bytes
+    except Exception as e:
+        print(f"[Voice] Sync TTS Error: {str(e)}")
+        raise Exception(f"Text-to-speech error: {str(e)}")
 
 
 def get_available_voices():
     """
-    Get list of available voices from ElevenLabs
+    Get list of available voices (Edge-TTS Microsoft voices)
     
     Returns:
         List of voice objects with id and name
     """
-    try:
-        client = _get_client()
-        voices = client.voices.get_all()
-        voice_list = [
-            {
-                "id": voice.voice_id,
-                "name": voice.name,
-                "category": voice.category if hasattr(voice, 'category') else "standard"
-            }
-            for voice in voices.voices
-        ]
-        print(f"[Voice] Retrieved {len(voice_list)} available voices from ElevenLabs")
-        return voice_list
-    except Exception as e:
-        print(f"[Voice] Error fetching voices: {str(e)}")
-        raise Exception(f"Error fetching voices: {str(e)}")
+    voice_list = [
+        {
+            "id": "hi-IN-SwaraNeural",
+            "name": "Swara (Hindi)",
+            "language": "hi",
+            "category": "neural"
+        },
+        {
+            "id": "hi-IN-MadhurNeural",
+            "name": "Madhur (Hindi)",
+            "language": "hi",
+            "category": "neural"
+        },
+        {
+            "id": "en-IN-NeerjaNeural",
+            "name": "Neerja (English India)",
+            "language": "en",
+            "category": "neural"
+        },
+        {
+            "id": "bn-IN-TanushreeNeural",
+            "name": "Tanushree (Bengali)",
+            "language": "bn",
+            "category": "neural"
+        },
+        {
+            "id": "ta-IN-PallaviNeural",
+            "name": "Pallavi (Tamil)",
+            "language": "ta",
+            "category": "neural"
+        },
+        {
+            "id": "mr-IN-ManoharaNeural",
+            "name": "Manohara (Marathi)",
+            "language": "mr",
+            "category": "neural"
+        }
+    ]
+    print(f"[Voice] Available Edge-TTS voices: {len(voice_list)} voices")
+    return voice_list
