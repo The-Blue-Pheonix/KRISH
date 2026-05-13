@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sprout, CloudRain, ShieldAlert, MoreHorizontal } from 'lucide-react';
-import { chatWithAI } from '../services/api';
+import { Send, Bot, User, Sprout, CloudRain, ShieldAlert, MoreHorizontal, Mic, Play, Square } from 'lucide-react';
+import { chatWithAI, voiceChat } from '../services/api';
+import { voiceService } from '../services/voiceService';
 import { useTranslation } from 'react-i18next';
 
 export default function AIAssistant() {
@@ -15,6 +16,10 @@ export default function AIAssistant() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [farmData, setFarmData] = useState({ city: 'Kolkata', soil: 'Alluvial' });
+  const [isListening, setIsListening] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [voiceAvailable, setVoiceAvailable] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,6 +29,16 @@ export default function AIAssistant() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Check voice availability
+  useEffect(() => {
+    setVoiceAvailable(voiceService.isAvailable());
+  }, []);
+
+  // Set language for voice recognition
+  useEffect(() => {
+    voiceService.setLanguage(i18n.language);
+  }, [i18n.language]);
 
   // Get farm data from session/localStorage (set by Dashboard)
   useEffect(() => {
@@ -62,6 +77,124 @@ export default function AIAssistant() {
       setMessages((prev) => [...prev, errorResponse]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (!voiceService.isAvailable()) {
+      alert('Voice recognition is not available in your browser. Please use Chrome, Edge, or Safari.');
+      return;
+    }
+
+    if (isListening) {
+      voiceService.stopListening();
+      setIsListening(false);
+      return;
+    }
+
+    setIsListening(true);
+    setInterimTranscript('');
+
+    voiceService.startListening(
+      (result) => {
+        if (result.final) {
+          setInput(result.final);
+        }
+        setInterimTranscript(result.interim);
+      },
+      (error) => {
+        console.error('🎤 Voice error:', error);
+        setIsListening(false);
+        
+        // Provide specific error messages
+        const errorMessages = {
+          'no-speech': 'No speech detected. Please speak clearly into your microphone and try again.',
+          'audio-capture': 'Cannot access microphone. Please check if the microphone is connected and allowed.',
+          'network': 'Network error. Please check your internet connection.',
+          'not-allowed': 'Microphone access denied. Please allow microphone access in your browser settings.',
+          'service-not-allowed': 'Speech recognition service is not allowed. Please check your browser settings.'
+        };
+        
+        const message = errorMessages[error] || `Voice recognition error: ${error}. Try speaking again.`;
+        alert(message);
+      },
+      async (finalTranscript) => {
+        setIsListening(false);
+        
+        if (!finalTranscript.trim()) {
+          alert('No speech was detected. Please make sure your microphone is working and try again.');
+          return;
+        }
+
+        // Auto-submit on silence detection
+        await submitVoiceQuery(finalTranscript);
+      },
+      // onSilence callback - triggered after 4 seconds of silence
+      async (silentText) => {
+        console.log('🤐 Silence detected! Auto-submitting:', silentText);
+        await submitVoiceQuery(silentText);
+      }
+    );
+  };
+
+  const submitVoiceQuery = async (queryText) => {
+    setInput(queryText);
+    
+    // Add user message
+    const userMessage = { id: Date.now(), sender: 'user', text: queryText };
+    setMessages((prev) => [...prev, userMessage]);
+    setIsTyping(true);
+
+    try {
+      const result = await voiceChat(queryText, farmData.city, farmData.soil, i18n.language);
+      
+      const aiResponse = {
+        id: Date.now() + 1,
+        sender: 'ai',
+        text: result?.text || 'Unable to generate recommendation. Please try again.',
+        audio: result?.audio
+      };
+      
+      setMessages((prev) => [...prev, aiResponse]);
+      
+      // Auto-play response if audio is available
+      if (result?.audio) {
+        setIsPlayingAudio(true);
+        try {
+          console.log('🔊 Auto-playing AI response...');
+          await voiceService.playAudio(result.audio);
+          console.log('✅ Response audio finished playing');
+        } catch (audioError) {
+          console.error('Error playing audio:', audioError);
+        } finally {
+          setIsPlayingAudio(false);
+        }
+      }
+    } catch (err) {
+      console.error('Voice chat error:', err);
+      const errorResponse = {
+        id: Date.now() + 1,
+        sender: 'ai',
+        text: 'Sorry, I couldn\'t process your voice. Please try again or type your message.'
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
+      setInput('');
+    }
+  };
+
+  const playAudioMessage = async (audioHex) => {
+    if (isPlayingAudio) return;
+    
+    setIsPlayingAudio(true);
+    try {
+      await voiceService.playAudio(audioHex);
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      alert('Failed to play audio');
+    } finally {
+      setIsPlayingAudio(false);
     }
   };
 
@@ -107,6 +240,26 @@ export default function AIAssistant() {
                 : 'bg-white dark:bg-slate-800 text-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-slate-700 rounded-bl-sm shadow-sm'
             } transition-colors`}>
               {msg.text}
+              
+              {msg.audio && msg.sender === 'ai' && (
+                <div className="mt-2 pt-2 border-t border-current border-opacity-20">
+                  <button 
+                    onClick={() => playAudioMessage(msg.audio)}
+                    disabled={isPlayingAudio}
+                    className="flex items-center gap-2 text-xs font-semibold px-3 py-1 bg-opacity-20 hover:bg-opacity-30 disabled:opacity-50 rounded-full transition-all"
+                  >
+                    {isPlayingAudio ? (
+                      <>
+                        <Square size={12} className="fill-current" /> Playing...
+                      </>
+                    ) : (
+                      <>
+                        <Play size={12} className="fill-current" /> Listen
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -150,17 +303,57 @@ export default function AIAssistant() {
 
       {/* Input Form */}
       <form onSubmit={handleSend} className="p-4 bg-white dark:bg-slate-800 border-t border-neutral-200 dark:border-slate-700 transition-colors">
-        <div className="relative flex items-center">
+      {isListening && (
+          <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="font-medium mb-2 text-blue-700 dark:text-blue-300 flex items-center gap-2">
+              🎤 Listening... (speaking now)
+              <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse ml-2"></span>
+            </p>
+            {interimTranscript && (
+              <p className="italic text-sm text-blue-600 dark:text-blue-400">
+                "{interimTranscript}"
+              </p>
+            )}
+            <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">
+              {!interimTranscript 
+                ? '💬 Waiting for speech... (speak clearly and loudly)' 
+                : '✅ Speech detected! Stop talking to auto-submit (or wait 4 seconds)'}
+            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="flex-1 h-1 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 animate-pulse" style={{ width: '100%' }}></div>
+              </div>
+              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Auto-submit in 4s</span>
+            </div>
+          </div>
+        )}
+        
+        <div className="relative flex items-center gap-2">
+          <button 
+            type="button"
+            onClick={handleVoiceInput}
+            disabled={!voiceAvailable || isTyping}
+            className={`p-3 rounded-full transition-colors shrink-0 ${
+              isListening
+                ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                : 'bg-blue-500 hover:bg-blue-600 disabled:bg-neutral-300 dark:disabled:bg-slate-700 text-white'
+            }`}
+            title={voiceAvailable ? (isListening ? 'Stop listening (or wait for auto-submit)' : 'Click to speak - auto-submits after 4 seconds of silence') : 'Voice not available'}
+          >
+            {isListening ? <Square size={18} className="fill-white" /> : <Mic size={18} />}
+          </button>
+          
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Message Krishi AI..."
-            className="w-full bg-neutral-100 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 text-neutral-800 dark:text-neutral-100 rounded-full py-3 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors"
+            placeholder={isListening ? 'Listening - speak clearly...' : 'Message Krishi AI or use voice...'}
+            disabled={isListening}
+            className="flex-1 bg-neutral-100 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 text-neutral-800 dark:text-neutral-100 rounded-full py-3 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors disabled:opacity-50"
           />
           <button 
             type="submit" 
-            disabled={!input.trim()}
+            disabled={!input.trim() || isListening}
             className="absolute right-2 p-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-neutral-300 dark:disabled:bg-slate-700 text-white rounded-full transition-colors"
           >
             <Send size={16} />

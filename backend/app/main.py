@@ -73,6 +73,7 @@ app.include_router(recommendation.router, prefix="/recommendation", tags=["Recom
 import tempfile
 import shutil
 from app.services.plant_disease import analyze_plant_image
+from app.services.voice import text_to_speech, get_available_voices
 
 @app.post("/plant-disease")
 async def detect_plant_disease(file: UploadFile = File(...)):
@@ -98,7 +99,77 @@ async def detect_plant_disease(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ✅ Voice AI Endpoint
+class VoiceChatRequest(BaseModel):
+    text: str
+    city: str
+    soil: str
+    language: str = "en"
+
+@app.post("/voice-chat")
+async def voice_chat(request: VoiceChatRequest):
+    """
+    Process voice chat: Convert user query to AI response and generate speech
+    """
+    try:
+        from app.services.llm import cached_llm_call, LANGUAGE_CONFIG
+        
+        # Get AI response to the text
+        user_language = request.language.lower() if request.language else "en"
+        if user_language not in LANGUAGE_CONFIG:
+            user_language = "en"
+        
+        lang_config = LANGUAGE_CONFIG[user_language]
+        
+        prompt = f"""
+You are Krishi AI Advisor, an expert Agricultural Assistant holding a voice conversation with an Indian farmer in {request.city} (Soil Type: {request.soil}).
+
+🚨 CRITICAL RULE:
+{lang_config['rule']}
+
+Rule: Respond to the farmer concisely, speaking as if in a voice conversation. Keep it short and practical. Be friendly and natural. No technical jargon.
+
+Farmer asks: "{request.text}"
+"""
+        ai_response = cached_llm_call(prompt)
+        
+        # Convert response to speech
+        try:
+            audio_bytes = text_to_speech(ai_response)
+            audio_hex = audio_bytes.hex() if audio_bytes else None
+        except Exception as tts_error:
+            print(f"[Voice] TTS Error: {str(tts_error)}")
+            # Return text response even if TTS fails
+            audio_hex = None
+        
+        return {
+            "text": ai_response,
+            "audio": audio_hex,
+            "status": "success"
+        }
+    except ValueError as ve:
+        print(f"[Voice] ValueError: {str(ve)}")
+        raise HTTPException(status_code=401, detail=str(ve))
+    except Exception as e:
+        print(f"[Voice] Unexpected error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Voice chat error: {str(e)}")
+
+
+@app.get("/voices")
+def get_voices():
+    """Get available ElevenLabs voices"""
+    try:
+        voices = get_available_voices()
+        return {"voices": voices, "status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/")
+def health_check():
+    return {"status": "ok", "service": "smart-agri-backend"}
 def health_check():
     return {"status": "ok", "service": "smart-agri-backend"}
 
