@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 export default function DashboardLayout() {
   const { t, i18n } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -56,6 +57,12 @@ export default function DashboardLayout() {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
     }
+
+    // 3. Fetch Sidebar Collapse state
+    const savedCollapse = localStorage.getItem('sidebarCollapsed');
+    if (savedCollapse === 'true') {
+      setIsCollapsed(true);
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -70,10 +77,18 @@ export default function DashboardLayout() {
     }
   };
 
+  const toggleCollapse = () => {
+    const next = !isCollapsed;
+    setIsCollapsed(next);
+    localStorage.setItem('sidebarCollapsed', String(next));
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
   };
+
+  const sidebarMargin = isCollapsed ? 'md:ml-[72px]' : 'md:ml-64';
 
   return (
     <div className="min-h-screen bg-[#f4f7f6] dark:bg-slate-900 text-neutral-800 dark:text-neutral-100 flex font-sans transition-colors duration-200">
@@ -91,10 +106,12 @@ export default function DashboardLayout() {
         isOpen={isSidebarOpen} 
         closeSidebar={() => setIsSidebarOpen(false)} 
         onLogout={handleLogout}
+        isCollapsed={isCollapsed}
+        toggleCollapse={toggleCollapse}
       />
       
       {/* Main Content Area */}
-      <div className="flex-1 md:ml-64 flex flex-col min-h-screen overflow-hidden">
+      <div className={`flex-1 ${sidebarMargin} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}>
         
         {/* Top Navbar */}
         <header className="h-20 bg-white dark:bg-slate-800 border-b border-neutral-200 dark:border-slate-700 px-4 md:px-10 flex items-center justify-between sticky top-0 z-30 transition-colors duration-200">
