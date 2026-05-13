@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { fetchPrediction, getRecommendedSoil } from '../services/api';
 import { useTranslation } from 'react-i18next';
 import { useGeolocation } from '../hooks/useGeolocation';
@@ -61,7 +61,7 @@ export default function Dashboard() {
           setRecommendedSoil(suggested);
           // Auto-fill soil if it hasn't been manually changed
           setSoil(suggested);
-          console.log(`🌱 Auto-detected soil for ${city}: ${suggested}`);
+          console.log(`Auto-detected soil for ${city}: ${suggested}`);
         } catch (err) {
           console.error("Error fetching soil:", err);
           setRecommendedSoil("Alluvial");
@@ -195,7 +195,7 @@ export default function Dashboard() {
                  </select>
               </div>
               <div className="absolute top-full left-0 mt-2 hidden group-hover:block bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50">
-                📍 {t('dashboard.hero.auto_detected')}: <strong>{recommendedSoil}</strong>
+                ðŸ“ {t('dashboard.hero.auto_detected')}: <strong>{recommendedSoil}</strong>
               </div>
             </div>
 
@@ -210,7 +210,7 @@ export default function Dashboard() {
       {geoError && !location && (
         <div className="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm border border-blue-200 flex items-center gap-2 font-medium dark:bg-blue-900/20 dark:border-blue-900/50 dark:text-blue-300">
           <AlertCircle size={18} />
-          📍 {t('dashboard.errors.gps_access')}: {geoError}. {t('dashboard.errors.manual_select')}
+          {t('dashboard.errors.gps_access')}: {geoError}. {t('dashboard.errors.manual_select')}
         </div>
       )}
 
@@ -228,7 +228,7 @@ export default function Dashboard() {
           
           <div className="flex items-center justify-between my-2">
              <div className="flex items-baseline gap-1">
-               <span className="text-5xl font-black text-neutral-900 dark:text-white">{data?.weather?.temperature ?? '--'}°</span>
+               <span className="text-5xl font-black text-neutral-900 dark:text-white">{data?.weather?.temperature ?? '--'}&deg;</span>
              </div>
              <CloudSun size={48} className="text-amber-500" strokeWidth={1.5} />
           </div>
@@ -324,7 +324,7 @@ export default function Dashboard() {
             <div>
               <h3 className="text-lg font-black text-neutral-900 dark:text-neutral-100">Crop Insights</h3>
               <p className="text-sm text-neutral-500 dark:text-neutral-400">{data?.predicted_crop || 'Crop'} health outlook</p>
-              <span className="inline-flex mt-3 items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700">
+              <span className="inline-flex mt-3 items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
                 {healthTone.label}
               </span>
             </div>
@@ -352,11 +352,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className={`mt-5 rounded-xl p-4 border ${cropHealth?.pest_alert ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
-          <p className="text-sm font-bold text-neutral-900">
+        <div className={`mt-5 rounded-xl p-4 border ${cropHealth?.pest_alert ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30' : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/30'}`}>
+          <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
             {cropHealth?.pest_alert ? `Pest Alert: ${cropHealth?.pest_name || 'Risk detected'}` : 'No active pest alert'}
           </p>
-          <p className="text-xs text-neutral-600 mt-1">
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
             {cropHealth?.pest_alert
               ? 'Increase field scouting and prepare preventive control measures.'
               : 'Maintain weekly checks and keep the field clean.'}
@@ -369,12 +369,12 @@ export default function Dashboard() {
         
         {/* Recommended Crop Deep Dive */}
         <div className="lg:col-span-2 dashboard-card border-none overflow-hidden flex flex-col shadow-md">
-           <div className="relative h-64 w-full bg-neutral-100">
-             <img 
-               src="https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?q=80&w=1600&auto=format&fit=crop" 
-               className="w-full h-full object-cover" 
-               alt="Suggested Crop Image" 
-             />
+           <div className="relative h-64 w-full bg-gradient-to-br from-emerald-800 via-emerald-700 to-green-900 dark:from-emerald-900 dark:via-emerald-800 dark:to-green-950 flex items-center justify-center">
+              <img src="rice.jpg" className="w-full h-full object-cover" alt="Rice paddy field" />
+              {/* <div className="text-center">
+                <Sprout size={48} className="text-emerald-300/60 mx-auto mb-2" />
+                <p className="text-emerald-300/60 text-xs font-medium">Crop Field Image</p>
+              </div> */}
              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-neutral-900/20 to-transparent"></div>
              <div className="absolute bottom-6 left-6 right-6">
                <div className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider mb-2 inline-block">{t('dashboard.main_grid.top_recommendation')}</div>
@@ -471,8 +471,8 @@ export default function Dashboard() {
                          <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-slate-800 text-white text-xs p-2 rounded-lg pointer-events-none transition-opacity whitespace-nowrap z-10 shadow-lg">
                            <p className="font-bold border-b border-slate-600 pb-1 mb-1">{dateObj.toLocaleDateString()}</p>
                            <p>Rain: <span className="font-bold text-blue-300">{day.rain} mm</span></p>
-                           <p>High: <span className="font-bold text-orange-300">{day.max_temp}°C</span></p>
-                           <p>Low: <span className="font-bold text-blue-200">{day.min_temp}°C</span></p>
+                           <p>High: <span className="font-bold text-orange-300">{day.max_temp}Â°C</span></p>
+                           <p>Low: <span className="font-bold text-blue-200">{day.min_temp}Â°C</span></p>
                          </div>
                          {/* Bar */}
                          <div 
@@ -509,12 +509,12 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-1 uppercase tracking-widest">{t('dashboard.lower.est_revenue')}</p>
-               <p className="text-2xl font-black text-emerald-900 dark:text-emerald-300">₹45,000</p>
+               <p className="text-2xl font-black text-emerald-900 dark:text-emerald-300">{"\u20B9"}45,000</p>
                <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-2 bg-emerald-100 dark:bg-emerald-800/50 inline-block px-2 py-0.5 rounded-sm">+12% {t('dashboard.lower.ly')}</p>
             </div>
             <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30">
                <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold mb-1 uppercase tracking-widest">{t('dashboard.lower.maint_cost')}</p>
-               <p className="text-2xl font-black text-amber-900 dark:text-amber-300">₹12,400</p>
+               <p className="text-2xl font-black text-amber-900 dark:text-amber-300">{"\u20B9"}12,400</p>
                <p className="text-[10px] font-bold text-amber-700 dark:text-amber-500 mt-2 bg-amber-100 dark:bg-amber-800/50 inline-block px-2 py-0.5 rounded-sm">{t('dashboard.lower.labor')}</p>
             </div>
           </div>
@@ -530,8 +530,9 @@ export default function Dashboard() {
           </div>
           
           <div className="flex gap-4 p-4 rounded-xl bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 transition-colors cursor-pointer group">
-             <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-neutral-200 dark:border-slate-700">
-               <img src="https://images.unsplash.com/photo-1592982537447-6f2ea3054f9a?w=400&q=80" alt="Soil Tips" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+             <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-neutral-200 dark:border-slate-700 bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/30 flex items-center justify-center">
+               {/* Replace this div with an <img> tag for soil tips image */}
+               <Leaf size={24} className="text-amber-500/60 dark:text-amber-400/50" />
              </div>
              <div>
                 <h4 className="text-sm font-black text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{t('dashboard.lower.best_practices')} {soil}</h4>
@@ -546,3 +547,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

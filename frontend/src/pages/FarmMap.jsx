@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 
 // ─── Noise ───────────────────────────────────────────────────────────────────
@@ -348,6 +349,32 @@ function makeGenericCrop(cfg, growth) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function IndianFarmSimulator() {
+  const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if device is mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint in Tailwind
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Redirect to dashboard if on mobile
+  useEffect(() => {
+    if (isMobile) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isMobile, navigate]);
+  
+  // Don't render the farm on mobile
+  if (isMobile) {
+    return null;
+  }
+  
   const mountRef = useRef(null);
   const stateRef = useRef({
     acres: 5, crop: 'rice', growth: 0.6,
