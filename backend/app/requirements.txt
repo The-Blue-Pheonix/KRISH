@@ -10,4 +10,5 @@ python-multipart
 groq
 python-dotenv
 elevenlabs>=0.2.27
-
+twilio>=9.3.0
+edge-tts>=6.1.12
